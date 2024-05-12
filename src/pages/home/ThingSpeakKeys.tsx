@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const ThingSpeak = () => {
+const ThingSpeakKeys = () => {
   const [channelId, setChannelId] = useState('')
   const [readApiKey, setReadApiKey] = useState('')
   const [writeApiKey, setWriteApiKey] = useState('')
@@ -78,4 +78,4 @@ const ThingSpeak = () => {
   )
 }
 
-export default ThingSpeak
+export default ThingSpeakKeys

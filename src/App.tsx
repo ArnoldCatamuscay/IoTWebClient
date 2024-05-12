@@ -2,8 +2,8 @@ import './App.css'
 import Login from './pages/auth/Login'
 import Home from './pages/home/Home'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { Bounce, Flip, ToastContainer, Zoom } from 'react-toastify'
-import ThingSpeak from './pages/home/ThingSpeak'
+import { Bounce, ToastContainer } from 'react-toastify'
+import ThingSpeakKeys from './pages/home/ThingSpeakKeys'
 import Register from './pages/auth/Register'
 import { AuthProvider } from './context/authContext' 
 import 'react-toastify/dist/ReactToastify.css';
@@ -23,7 +23,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/credentials" element={
             <ProtectedRoute>
-              <ThingSpeak />
+              <ThingSpeakKeys />
             </ProtectedRoute>
           } />
           <Route path="/home" element={
