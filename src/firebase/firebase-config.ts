@@ -15,8 +15,3 @@ const firebaseConfig = {
 // Initialize Firebase
 export const appFirebase = initializeApp(firebaseConfig);
 export const auth = getAuth(appFirebase);
-
-export async function userExist(uid: string): Promise<Boolean> {
-  
-  return true;
-}

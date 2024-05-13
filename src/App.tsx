@@ -8,6 +8,7 @@ import Register from './pages/auth/Register'
 import { AuthProvider } from './context/authContext' 
 import 'react-toastify/dist/ReactToastify.css';
 import { ProtectedRoute } from './components/ProtectedRoute'
+import Account from './pages/auth/Account'
 
 function App() {
   return (
@@ -29,6 +30,11 @@ function App() {
           <Route path="/home" element={
             <ProtectedRoute>
               <Home />
+            </ProtectedRoute>
+          } />
+          <Route path="/account" element={
+            <ProtectedRoute>
+              <Account />
             </ProtectedRoute>
           } />
         </Routes>

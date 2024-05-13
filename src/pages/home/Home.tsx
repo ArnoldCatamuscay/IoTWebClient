@@ -1,27 +1,18 @@
-import { toast } from "react-toastify";
 import { useAuth } from "../../context/authContext";
 
 const Home = () => {
-  const { user, logOut, loading } = useAuth();
-
-  const handleLogOut = async () => {
-    try {
-      await logOut();
-      toast.info("See ya!");  
-    } catch (error: any) {
-      toast.error(error.message); 
-    }
-  }
+  const { user, loading } = useAuth();
 
   if(loading) return <h1>Loading...</h1>
 
   return (
     <>
-      <h1>Home</h1>
-      <h2>Welcome {user.displayName || user?.email}</h2>
-      <button onClick={handleLogOut}>
-        Logout
-      </button>
+      <div className="flex flex-col items-center text-center">
+        <h1 className="text-4xl font-bold text-gray-900">
+          Welcome, <span className="text-purple-500">{user.displayName || user?.email}</span>!
+        </h1>
+        {/* <p className="mt-2 text-gray-600">Ready to start your journey?</p> */}
+      </div>
     </>
   )
 }
