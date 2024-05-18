@@ -2,22 +2,34 @@ import './Register.css'
 import { useAuth } from "../../context/authContext"
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 const Register = () => {
   const { signUpWithEmailAndPassword } = useAuth();
   const { register, handleSubmit, formState:{errors}, watch } = useForm();
   const navigate = useNavigate();
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit( (data) => {
     const { email, password } = data;
-    try {
-      await signUpWithEmailAndPassword(email, password)
-      toast.success("User created successfully");
-      navigate("/");
-    } catch (error: any) {
-      toast.error(error.message);
-    }
+    const promise = signUpWithEmailAndPassword(email, password)
+    toast.promise(promise, {
+      loading: 'Cargando...',
+      success: (res: any) => {
+        navigate("/");
+        const username = res.user.displayName === null ? res.user.email : res.user.displayName;
+        return 'Bienvenido ' + username;
+      },
+      error: (error: any) => {
+        switch(error.code) {
+          case 'auth/email-already-in-use':
+            return 'El correo electrónico ya está en uso';
+          case 'auth/weak-password':
+            return 'La contraseña es muy débil';
+          default:
+            return error.message;
+        }
+      },
+    });
   });
 
   return (

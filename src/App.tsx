@@ -2,7 +2,6 @@ import './App.css'
 import Login from './pages/auth/Login'
 import Home from './pages/home/Home'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { Bounce, ToastContainer } from 'react-toastify'
 import ThingSpeakKeys from './pages/home/ThingSpeakKeys'
 import Register from './pages/auth/Register'
 import { AuthProvider } from './context/authContext' 
@@ -10,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ProtectedRoute } from './components/ProtectedRoute'
 import Account from './pages/auth/Account'
 import NavBar from './components/Nav'
+import { Toaster } from 'sonner'
 
 function App() {
   return (
@@ -41,7 +41,12 @@ function App() {
             </ProtectedRoute>
           } />
         </Routes>
-        <ToastContainer
+        <Toaster 
+          position="top-right"
+          richColors={true}
+          closeButton 
+        />
+        {/* <ToastContainer
           position="bottom-center"
           autoClose={3000}
           hideProgressBar={false}
@@ -53,7 +58,7 @@ function App() {
           pauseOnHover
           theme="colored"
           transition = { Bounce }
-        />
+        /> */}
       </AuthProvider>
     </Router>
   )

@@ -1,7 +1,7 @@
 import './Login.css'
 import { useAuth } from "../../context/authContext"
 import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 
 const Login = () => {
@@ -9,28 +9,44 @@ const Login = () => {
   const { register, handleSubmit, formState:{errors} } = useForm();
   const navigate = useNavigate();
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit( (data) => {
     const { email, password } = data;
-    try {
-      await logInWithEmailAndPassword(email, password)
-      toast.success("User logged in successfully");
-      navigate("/");
-    } catch (error: any) {
-      toast.error(error.message);
-    }
+    const promise = logInWithEmailAndPassword(email, password)
+    toast.promise(promise, {
+      loading: 'Cargando...',
+      success: (res: any) => {
+        navigate("/");
+        const username = res.user.displayName === null ? res.user.email : res.user.displayName;
+        return 'Bienvenido ' + username;
+      },
+      error: (error: any) => {
+        switch(error.code) {
+          case 'auth/too-many-requests':
+            return 'Demasiados intentos. Intente más tarde';
+          case 'auth/invalid-credential':
+            return 'Usuario o contraseña incorrectos';
+          default:
+            return error.message;
+        }
+      },
+    });
   });
 
-  const handleGoogleLogin = async () => {
-    try {
-      await loginWithGoogle();
-      navigate("/");
-      toast.success("User logged in successfully");  
-    } catch (errorE: any) {
-      if(errorE.message !== "Firebase: Error (auth/popup-closed-by-user).") {
-        //setError(errorE.message)
-        toast.error(errorE.message);
-      }
-    }
+  const handleGoogleLogin = () => {
+    const promise = loginWithGoogle();
+    toast.promise(promise, {
+      loading: 'Cargando...',
+      success: (res: any) => {
+        navigate("/");
+        const username = res.user.displayName === null ? res.user.email : res.user.displayName;
+        return 'Bienvenido ' + username;
+      },
+      error: (res: any) => {
+        if(res.message !== "Firebase: Error (auth/popup-closed-by-user).") {
+          return res.message;
+        }
+      },
+    });
   }
 
   return (
