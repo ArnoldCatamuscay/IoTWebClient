@@ -61,7 +61,7 @@ const Login = () => {
               <span className="mb-2 text-md text-white">Correo</span>
               <input
                 type="email"
-                className="w-full p-2 bg-[#374151] border border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-[#969da9]"
+                className="w-full p-2 bg-[#374151] border border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-[#969da9] focus:outline-none focus:border-blue-500"
                 name="email"
                 id="email"
                 placeholder="example@gmail.com"
@@ -75,7 +75,7 @@ const Login = () => {
                 name="password"
                 id="password"
                 placeholder="********"
-                className="w-full p-2 bg-[#374151] border border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-[#969da9]"
+                className="w-full p-2 bg-[#374151] border border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-[#969da9] focus:outline-none focus:border-blue-500"
                 onChange={handleChange}
               />
             </div>

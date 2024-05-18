@@ -46,12 +46,15 @@ const Register = () => {
               <span className="mb-2 text-md text-white">Correo</span>
               <input
                 type="email"
-                className="w-full p-2 bg-[#374151] border border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-[#969da9]"
+                className="w-full p-2 bg-[#374151] border border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-[#969da9] focus:outline-none focus:border-blue-500"
                 name="email"
                 id="email"
                 placeholder="example@gmail.com"
                 onChange={handleChange}
               />
+              {/* <span className="flex items-center font-medium tracking-wide text-red-500 text-xs mt-1 ml-1">
+                Invalid username field !
+              </span> */}
             </div>
             <div className="py-4">
               <span className="mb-2 text-md text-white">Contraseña</span>
@@ -60,7 +63,7 @@ const Register = () => {
                 name="password"
                 id="password"
                 placeholder="********"
-                className="w-full p-2 bg-[#374151] border border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-[#969da9]"
+                className="w-full p-2 bg-[#374151] border border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-[#969da9] focus:outline-none focus:border-blue-500"
                 onChange={handleChange}
               />
             </div>
