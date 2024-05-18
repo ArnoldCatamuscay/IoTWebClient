@@ -1,13 +1,20 @@
 import { toast } from "react-toastify";
 import { useAuth } from "../../context/authContext";
+import { useMqttStore } from "../../store/mqtt-store";
 
 const Account = () => {
   const { user, logOut, loading } = useAuth();
+  const updateClientId = useMqttStore(state => state.updateClientId);
+  const updateClientPaho = useMqttStore(state => state.updateClientPaho);
 
   const handleLogOut = async () => {
     try {
+      
       await logOut();
-      toast.info("See ya!");  
+      updateClientId('');
+      updateClientPaho();
+      // toast.info("Client Id is set to empty string and client paho has been updated.");
+      toast.info("Client Id is set to empty string and client paho has been updated.");  
     } catch (error: any) {
       toast.error(error.message); 
     }

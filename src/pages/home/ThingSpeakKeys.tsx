@@ -8,7 +8,13 @@ import axios from "axios";
 const ThingSpeakKeys = () => {
   
   const updateClientPaho = useMqttStore(state => state.updateClientPaho);
-  const clientPaho = useMqttStore(state => state.clientPaho);
+  // const clientPaho = useMqttStore(state => state.clientPaho);
+  const {host, port, path, clientPaho, clear} = useMqttStore();
+  // const [isConnected, setIsConnected] = useState(false);
+
+  const handleClearState = () => {
+    clear();
+  }
 
   //Eje Y
   const [options, setOptions] = useState<ApexCharts.ApexOptions | undefined>();
@@ -92,18 +98,35 @@ const ThingSpeakKeys = () => {
   }, [seriesData])
 
   useEffect(() => {
+    
+    
+    
     // updateClientPaho();
-    console.log('Channel ID: ', channelId)
-    if(clientPaho) {
-      console.log('Client paho: ', clientPaho.host, clientPaho.port, clientPaho.path, clientPaho.clientId, clientPaho.isConnected());
+    // console.log('Channel ID: ', channelId)
+    // console.log('Client paho: ', clientPaho!.host, clientPaho!.port, clientPaho!.path, clientPaho!.clientId/*, clientPaho.isConnected()*/);
+    // clientPaho.onConnectionLost = onConnectionLost;
+    // clientPaho.onMessageArrived = onMessageArrived;
+    // clientPaho.connect(connectOptions);
+    // fetchData();
+    
+    
+  }, []);
+
+  useEffect(() => {
+    if (clientId !== null) {
+      console.log('URL: ', host, ':', port, path);
+      console.log('Client id property:', clientId);
+      console.log('Client id from Client Paho:', clientPaho.clientId);
+      console.log('Is connected?: ', clientPaho.isConnected());
+    }
+    if(clientId !== '' && username !== '' && password !== '' && clientPaho.isConnected() === false) {
       clientPaho.onConnectionLost = onConnectionLost;
       clientPaho.onMessageArrived = onMessageArrived;
       clientPaho.connect(connectOptions);
       fetchData();
     }
-    
-  }, []);
-  
+  }, [clientPaho]);
+
   const channelId = useMqttStore(state => state.channelId);
   const readApiKey = useMqttStore(state => state.readApiKey);
   const writeApiKey = useMqttStore(state => state.writeApiKey);
@@ -188,7 +211,7 @@ const ThingSpeakKeys = () => {
   const handleUpdateKeys = () => {
     if(thingSpeak.channelId) {
       updateChannelId(thingSpeak.channelId);
-      updateClientPaho();  
+      // updateClientPaho();  
     }
     if(thingSpeak.readApiKey) {
       updateReadApiKey(thingSpeak.readApiKey);
@@ -198,6 +221,7 @@ const ThingSpeakKeys = () => {
     }
     if(thingSpeak.clientId) {
       updateClientId(thingSpeak.clientId);
+      updateClientPaho();
     }
     if(thingSpeak.username) {
       updateUsername(thingSpeak.username);
@@ -332,16 +356,16 @@ const ThingSpeakKeys = () => {
           <div className="md:w-1/3"></div>
           <div className="md:w-2/3">
             <button
-              className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+              className="shadow bg-[#073B4C] hover:bg-[#118AB2] focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
               type="button"
               onClick={handleUpdateKeys}
             >
-              Update Keys
+              Actualizar credenciales
             </button>
           </div>
         </div>
         {/* Button */}
-        <div className="md:flex md:items-center">
+        <div className="md:flex md:items-center mt-2">
           <div className="md:w-1/3"></div>
           <div className="md:w-2/3">
             <button
@@ -349,7 +373,7 @@ const ThingSpeakKeys = () => {
               type="button"
               onClick={handleConnectMqtt}
             >
-              Connect
+              Connect Deprecated
             </button>
           </div>
         </div>
@@ -362,7 +386,20 @@ const ThingSpeakKeys = () => {
               type="button"
               onClick={handleDisconnectMqtt}
             >
-              Disconnect
+              Disconnect Deprecated
+            </button>
+          </div>
+        </div>
+        {/* Button */}
+        <div className="md:flex md:items-center">
+          <div className="md:w-1/3"></div>
+          <div className="md:w-2/3">
+            <button
+              className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+              type="button"
+              onClick={handleClearState}
+            >
+              Clear Deprecated
             </button>
           </div>
         </div>
