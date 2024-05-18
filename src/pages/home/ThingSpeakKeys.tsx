@@ -32,7 +32,7 @@ const ThingSpeakKeys = () => {
         updateSeriesData(Number(feeds[0].field1));
         const utcDate = new Date(feeds[0].created_at);
         // setLocalCategories((prevState) => [...prevState, utcDate.toLocaleString()]);
-        updateCategories(utcDate.toLocaleString());
+        updateCategories(utcDate.toLocaleTimeString());
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -41,6 +41,7 @@ const ThingSpeakKeys = () => {
 
   useEffect(() => {
     setOptions({
+      // colors : ['#5085de'],
       chart: {
         id: 'realtime',
         height: 350,
@@ -60,14 +61,17 @@ const ThingSpeakKeys = () => {
         }
       },
       dataLabels: {
-        enabled: false
+        enabled: false,
       },
       stroke: {
         curve: 'smooth'
       },
       title: {
-        text: 'Dynamic Updating Chart',
-        align: 'center'
+        text: 'Sensor de peso',
+        align: 'center',
+        style: {
+          color: '#98938c'
+        }
       },
       markers: {
         size: 0
@@ -76,21 +80,57 @@ const ThingSpeakKeys = () => {
         type: 'category',
         // range: XAXISRANGE,
         categories: categories,
-        title: {text: 'Date and Time'}
+        title: {
+          text: 'Fecha y hora',
+          style: {
+            color: '#98938c'
+          }
+        },
+        labels: {
+          style: {
+            colors: '#98938c'
+          }
+        }
       },
       yaxis: {
         max: 100,
-        title: {text: 'Weight (kg)'}
+        title: {
+          text: 'Peso (kg)',
+          style: {
+            color: '#98938c'
+          }
+        },
+        labels: {
+          style: {
+            colors: '#98938c'
+          }
+        }
       },
       legend: {
         show: false
       },
+      grid: {
+        borderColor: '#FBEAEB',
+        strokeDashArray: 5,
+        yaxis: {
+          lines: {
+            show: true
+          }
+        },
+        xaxis: {
+          lines: {
+            show: true
+          }
+        }
+      }
     })
   }, [categories])
 
   useEffect(() => {
     setSeries([{
       data: seriesData,
+      name: 'Peso (kg)',
+      color: '#5085de'
     }])
     
   }, [seriesData])
@@ -165,7 +205,7 @@ const ThingSpeakKeys = () => {
     console.log('Last write:', field1, 'kg', 'at:', utcDate.toLocaleString());
     // setLocalSeriesData((prevState) => [...prevState, Number(field1)]);
     // setLocalCategories((prevState) => [...prevState, utcDate.toLocaleString()]);
-    updateCategories(utcDate.toLocaleString());
+    updateCategories(utcDate.toLocaleTimeString());
     updateSeriesData(Number(field1));
   }
   //* End of MQTT
@@ -210,8 +250,8 @@ const ThingSpeakKeys = () => {
     <div className="mt-4">
       {/* <h2 className="text-2xl font-bold text-center">Categories: |{categories}|</h2>
       <h2 className="text-2xl font-bold text-center">Series data: |{seriesData}|</h2> */}
-      <div className="ml-2">
-        <div>
+      <div className="ml-2 mr-1">
+        <div className="bg-[#0d2136] px-2">
           {series && options && (
             <ReactApexChart options={options} series={series} type="line" height={350} />
           )}
