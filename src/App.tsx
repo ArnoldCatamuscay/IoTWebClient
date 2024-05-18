@@ -9,11 +9,14 @@ import { AuthProvider } from './context/authContext'
 import 'react-toastify/dist/ReactToastify.css';
 import { ProtectedRoute } from './components/ProtectedRoute'
 import Account from './pages/auth/Account'
+import NavBar from './components/Nav'
 
 function App() {
   return (
     <Router>
       <AuthProvider>
+        <NavBar />
+        
         <Routes>
           <Route path="/" element={
             <ProtectedRoute>

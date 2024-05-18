@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+// import { persist } from 'zustand/middleware'
 import Paho from 'paho-mqtt';
 
 interface State {
@@ -14,7 +14,7 @@ interface State {
   clientId: string 
   username: string 
   password: string 
-  clientPaho: Paho.Client | null
+  clientPaho: Paho.Client
   //Update functions
   updateChannelId: (newChannelId: string) => void
   updateReadApiKey: (newReadApiKey: string) => void
@@ -23,10 +23,17 @@ interface State {
   updateUsername: (newUsername: string) => void
   updatePassword: (newPassword: string) => void
   updateClientPaho: () => void
+  //clear
+  clear: () => void
+  //Chart
+  categories: string[],
+  seriesData: number[],
+  updateCategories: (newCategorie: string) => void
+  updateSeriesData: (newData: number) => void
 }
 
 export const useMqttStore = create<State>()(
-  persist(
+  
     (set, get)=>({
       channelId: '',
       readApiKey: '',
@@ -37,7 +44,7 @@ export const useMqttStore = create<State>()(
       clientId: '',
       username: '',
       password: '',
-      clientPaho: null,
+      clientPaho: new Paho.Client("mqtt3.thingspeak.com", 80, "/mqtt", ''),
       //* <----------------  Updates ---------------->
       updateChannelId: (newChannelId: string) => {
         set({ channelId: newChannelId })
@@ -51,11 +58,35 @@ export const useMqttStore = create<State>()(
       updatePassword: (newPassword: string) => set({ password: newPassword }),
       updateClientPaho: () => {
         const { clientId } = get()
+        console.log('clientId from MQTT-STORE: ', clientId)
         const newClientPaho = new Paho.Client("mqtt3.thingspeak.com", 80, "/mqtt", clientId)
         set({ clientPaho: newClientPaho })
       },
+      //* <----------------  Clear ---------------->
+      clear: () => {
+        set({ 
+          channelId: '',
+          readApiKey: '',
+          writeApiKey: '',
+          clientId: '',
+          username: '',
+          password: '',
+          clientPaho: new Paho.Client("mqtt3.thingspeak.com", 80, "/mqtt", ''),
+          categories: [],
+          seriesData: []
+        })
+      },
+      //* <----------------  Chart ---------------->
+      categories: [],
+      seriesData: [],
+      updateCategories: (newCategorie: string) => {
+        const { categories } = get()
+        set({ categories: [...categories, newCategorie]})
+      },
+      updateSeriesData: (newData: number) => {
+        const { seriesData } = get()
+        set({ seriesData: [...seriesData, newData] })
+      },
     }),
-    { name: 'mqtt-storage'}
-  )
-  
+    
 )

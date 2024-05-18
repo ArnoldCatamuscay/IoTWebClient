@@ -53,12 +53,12 @@ const Login = () => {
         <div className="relative flex flex-col m-6 space-y-8 bg-white shadow-2xl rounded-2xl md:flex-row md:space-y-0">
           {/* left side */}
           <div className="flex flex-col justify-center p-8 md:p-14">
-            <span className="mb-3 text-4xl font-bold">Iniciar sesión</span>
+            <span className="mb-3 text-4xl font-bold text-[#073B4C]">Iniciar sesión</span>
             <span className="font-light text-gray-400 mb-0">
               Por favor ingrese sus datos
             </span>
             <div className="py-4">
-              <span className="mb-2 text-md">Correo</span>
+              <span className="mb-2 text-md text-[#073B4C]">Correo</span>
               <input
                 type="email"
                 className="w-full p-2 border border-gray-300 rounded-md placeholder:font-light placeholder:text-gray-500"
@@ -69,7 +69,7 @@ const Login = () => {
               />
             </div>
             <div className="py-4">
-              <span className="mb-2 text-md">Contraseña</span>
+              <span className="mb-2 text-md text-[#073B4C]">Contraseña</span>
               <input
                 type="password"
                 name="password"
@@ -80,16 +80,16 @@ const Login = () => {
               />
             </div>
             <div className="flex justify-between w-full py-4">
-              <span className="font-bold text-md">¿Olvidó su contraseña?</span>
+              <span className="font-bold text-md text-[#073B4C]">¿Olvidó su contraseña?</span>
             </div>
             <button
-              className="w-full bg-black text-white p-2 rounded-lg mb-6 hover:bg-white hover:text-black hover:border hover:border-gray-300"
+              className="w-full bg-[#073B4C] text-white p-2 rounded-lg mb-6 hover:bg-white hover:text-[#073B4C] hover:border hover:border-[#073B4C]"
               onClick={handleSubmit}
             >
               Iniciar sesión
             </button>
             <button
-              className="w-full border border-gray-300 text-md p-2 rounded-lg mb-6 hover:bg-black hover:text-white"
+              className="w-full border border-[#073B4C] text-[#073B4C] text-md p-2 rounded-lg mb-6 hover:bg-[#073B4C] hover:text-white"
               onClick={handleGoogleLogin}
             >
               <img src="google.svg" alt="img" className="w-6 h-6 inline mr-2" />
@@ -97,7 +97,7 @@ const Login = () => {
             </button>
             <div className="text-center text-gray-700">
               ¿No tienes una cuenta?
-              <Link to="/register" className="font-bold text-black"> Regístrate</Link>
+              <Link to="/register" className="font-bold text-[#073B4C]"> Regístrate</Link>
             </div>
           </div>
           {/* right side */}
@@ -114,7 +114,7 @@ const Login = () => {
               <a 
                 href="https://www.pexels.com/es-es/foto/perro-y-gato-en-el-suelo-4214919/" 
                 target="_blank" 
-                className="text-black text-xl"
+                className="text-[#073B4C] text-xl"
                 >Foto de Marián Šicko</a>
             </div>
           </div>

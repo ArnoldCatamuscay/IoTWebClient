@@ -1,21 +1,44 @@
+import './Nav.css'
 import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/authContext';
+import { toast } from 'react-toastify';
+import { useMqttStore } from '../store/mqtt-store';
 
 const NavBar = () => {
-  let Links =[
-    {name:"HOME",link:"/"},
-    {name:"KEYS",link:"/credentials"},
-    {name:"ACCOUNT",link:"/account"},
-  ];
+  const { user, logOut } = useAuth();
+  const navigate = useNavigate();
+  const clientPaho = useMqttStore(state => state.clientPaho);
+  const clear = useMqttStore(state => state.clear);
+
+  const handleLogOut = async () => {
+    try {
+      if(clientPaho.isConnected()) clientPaho.disconnect();
+      clear();
+      setOpen(false);
+      await logOut();
+      toast.info("See ya!");
+      navigate('/');
+    } catch (error: any) {
+      toast.error(error.message); 
+    }
+  }
+
   let [open,setOpen]=useState(false);
+  
+  
   return (
-    <div className="bg-white sticky top-0 z-[1] mx-auto  flex w-full flex-wrap items-center justify-between border-b border-gray-100 bg-background font-sans font-bold uppercase text-text-primary backdrop-blur-[100px] dark:border-gray-800 dark:bg-d-background dark:text-d-text-primary">
-      <div className='md:flex items-center justify-between bg-white py-4 md:px-4 px-4'>
-        <div className='cursor-pointer flex items-center'>
-          <img className='mr-1 pt-2' src="/favicon.png" alt="logo" />
-          {/* <img src="/favicon.png" alt="logo" /> */}
+    // <div className="bg-[#118AB2] sticky top-0 z-[1] mx-auto  flex w-full flex-wrap items-center justify-between border-b border-gray-100 bg-background font-sans font-bold uppercase text-text-primary backdrop-blur-[100px] dark:border-gray-800 dark:bg-d-background dark:text-d-text-primary">
+    <nav className='bg-[#118AB2] py-3 relative'>
+      <div className='container md:mx-auto md:flex px-4 md:px-0'>
+        {/* LOGO */}
+        <div className='flex flex-grow items-center'>
+          <img src="/favicon.png" alt="logo" />
         </div>
         
-        <div onClick={()=>setOpen(!open)} className='text-3xl absolute right-8 top-6 cursor-pointer md:hidden'>
+        
+        {/* MENU */}
+        <div onClick={()=>setOpen(!open)} className='absolute right-6 top-4 cursor-pointer md:hidden'>
           { open? 
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -27,17 +50,39 @@ const NavBar = () => {
           }
         </div>
 
-        <ul className={`md:flex md:items-center md:pb-0 pb-12 absolute md:static bg-white md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in ${open ? 'top-20 ':'top-[-490px]'}`}>
+        {/* NAV LINKS */}
+        {/* <div className={`${open ? 'top-12 ':'top-[-490px]'} flex flex-grow justify-between`}> */}
           {
-            Links.map((link)=>(
-              <li key={link.name} className='md:ml-8 text-xl md:my-0 my-7'>
-                <a href={link.link} className='text-gray-800 hover:text-gray-400 duration-500'>{link.name}</a>
-              </li>
-            ))
+            user ?
+              //IF USER IS PRESENT
+              <div className={`md:flex flex-grow justify-between items-center ${open ? 'top-12 absolute bg-[#118AB2] w-full left-0 z-[1]':'hidden'} `}>
+                {/* LINKS */}
+                <div className='flex flex-col md:flex-row text-center'>
+                <Link to='/home' className='text-white hover:text-gray-800 duration-500 md:mr-7 my-4 md:my-0 mb:text-2xl text-xl' onClick={()=>{setOpen(false)}}>Home</Link>
+                  <Link to='/credentials' className='text-white hover:text-gray-800 duration-500 md:mr-7 my-4 md:my-0 mb:text-2xl text-xl' onClick={()=>{setOpen(false)}}>Dashboard</Link>
+                </div>
+                {/* BUTTONS */}
+                <div className='flex flex-col md:flex-row text-center'>
+                  <button onClick={handleLogOut} className='btn-register'>Log Out</button>
+                </div>
+              </div>
+            :
+              //IF USER IS NOT PRESENT
+              <div className={`md:flex flex-grow justify-between items-center ${open ? 'top-12 absolute bg-[#118AB2] w-full left-0 z-[1]':'hidden'} `}>
+                {/* LINKS */}
+                <div className='flex flex-col md:flex-row text-center'>
+                  <Link to='/' className='text-white hover:text-gray-800 duration-500 md:mr-7 my-4 md:my-0 mb:text-2xl text-xl' onClick={()=>{setOpen(false)}}>Landing</Link>
+                </div>
+                {/* BUTTONS */}
+                <div className='flex flex-col md:flex-row text-center'>
+                  <Link to='/login' className='btn-login' onClick={()=>{setOpen(false)}}>Log In</Link>
+                  <Link to='/register' className='btn-register' onClick={()=>{setOpen(false)}}>Register</Link>
+                </div>
+              </div>
           }
-        </ul>
+        {/* </div> */}
       </div>
-    </div>
+    </nav>
   )
 }
 
