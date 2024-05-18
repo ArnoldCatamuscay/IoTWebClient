@@ -1,83 +1,111 @@
 import './Register.css'
-import { useState } from "react"
 import { useAuth } from "../../context/authContext"
 import { Link, useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify';
 
 const Register = () => {
   const { signUpWithEmailAndPassword } = useAuth();
-
-  const [user, setUser] = useState({
-    email: '',
-    password: ''
-  });
-
-  // const [error, setError] = useState("");
+  const { register, handleSubmit, formState:{errors}, watch } = useForm();
   const navigate = useNavigate();
-  
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    // setError("");
+
+  const onSubmit = handleSubmit(async (data) => {
+    const { email, password } = data;
     try {
-      await signUpWithEmailAndPassword(user.email, user.password)
+      await signUpWithEmailAndPassword(email, password)
       toast.success("User created successfully");
       navigate("/");
-    } catch (errorE: any) {
-      // setError(errorE.message)
-      toast.error(errorE.message);
-    }  
-  }
-
-  const handleChange = ( {target: {name, value}}: any) => {
-    setUser({...user, [name]: value})
-  }
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  });
 
   return (
     <>
       <div className="flex items-center justify-center bg-[#031525]">
         <div className="relative flex flex-col m-6 space-y-8 bg-[#0d2136] shadow-2xl shadow-cyan-500/50 rounded-2xl md:flex-row md:space-y-0">
           {/* left side */}
-          <div className="flex flex-col justify-center p-8 md:p-14">
+          <form onSubmit={onSubmit} className="flex flex-col justify-center p-8 md:p-14">
+            
             <span className="mb-3 text-4xl font-bold text-white">Registrarse</span>
-            {/* <span className="font-light text-gray-400 mb-0">
+            <span className="font-light text-gray-400 mb-0">
               Por favor registra tus datos para continuar
-            </span> */}
+            </span>
             <div className="py-4">
               <span className="mb-2 text-md text-white">Correo</span>
               <input
                 type="email"
                 className="w-full p-2 bg-[#374151] border border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-[#969da9] focus:outline-none focus:border-blue-500"
-                name="email"
-                id="email"
                 placeholder="example@gmail.com"
-                onChange={handleChange}
+                {...register("email", {
+                  required: {
+                    value: true,
+                    message: "Por favor ingrese su correo electrónico"
+                  },
+                  pattern: {
+                    value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g, ///^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
+                    message: "Correo electrónico inválido"
+                  }
+                })}
               />
-              {/* <span className="flex items-center font-medium tracking-wide text-red-500 text-xs mt-1 ml-1">
-                Invalid username field !
-              </span> */}
+              { errors.email && 
+                <span className="flex items-center font-medium tracking-wide text-red-500 text-xs mt-1 ml-1">
+                  {String(errors.email.message)}
+                </span> 
+              }
             </div>
             <div className="py-4">
               <span className="mb-2 text-md text-white">Contraseña</span>
               <input
                 type="password"
-                name="password"
-                id="password"
-                placeholder="********"
                 className="w-full p-2 bg-[#374151] border border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-[#969da9] focus:outline-none focus:border-blue-500"
-                onChange={handleChange}
+                // TODO form validation
+                {...register("password", {
+                  required: {
+                    value: true,
+                    message: "Por favor ingrese su contraseña"
+                  },
+                  minLength: {
+                    value: 6,
+                    message: "La contraseña debe tener al menos 6 caracteres"
+                  }
+                })}
               />
+              { errors.password && 
+                <span className="flex items-center font-medium tracking-wide text-red-500 text-xs mt-1 ml-1">
+                  {String(errors.password.message)}
+                </span> 
+              }
             </div>
-            <button
-              className="w-full bg-[#1a56db] text-white p-2 rounded-lg mb-6 hover:bg-[#1d4ed8]  hover:border-[#073B4C] "
-              onClick={handleSubmit}
-            >
+            <div className="py-4">
+              <span className="mb-2 text-md text-white">Confirmar contraseña</span>
+              <input
+                type="password"
+                className="w-full p-2 bg-[#374151] border border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-[#969da9] focus:outline-none focus:border-blue-500"
+                // TODO form validation
+                {...register("confirmPassword", {
+                  required: {
+                    value: true,
+                    message: "Por favor confirme su contraseña"
+                  },
+                  validate: (value) => value === watch('password') || "Las contraseñas no coinciden" 
+                })}
+              />
+              { errors.confirmPassword && 
+                <span className="flex items-center font-medium tracking-wide text-red-500 text-xs mt-1 ml-1">
+                  {String(errors.confirmPassword.message)}
+                </span> 
+              }
+            </div>
+            <button className="w-full bg-[#1a56db] text-white p-2 rounded-lg mb-6 hover:bg-[#1d4ed8]  hover:border-[#073B4C] ">
               Registrarme
             </button>
             <div className="text-center text-[#788c9f]">
               ¿Ya tienes una cuenta?
               <Link to="/login" className="font-bold text-[#335c8d] hover:text-[#3b82f6]"> Inicia sesión</Link>
             </div>
-          </div>
+            
+          </form>
           {/* right side */}
           <div className="relative">
             <img
