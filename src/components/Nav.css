@@ -33,9 +33,8 @@
 .btn-register {
   @apply  
   text-white 
-  bg-[#073B4C] hover:bg-[#073b4cd5] 
-  duration-500 
-  border border-[#073B4C] hover:border-[#073b4cd5] 
+  bg-[#1a56db] hover:bg-[#1d4ed8] 
+   hover:border-[#073B4C] 
   py-2 px-4 mx-8 mb-4 md:mx-0 md:mb-0
   
   rounded-md;
