@@ -25,6 +25,11 @@ interface State {
   updateClientPaho: () => void
   //clear
   clear: () => void
+  //Chart
+  categories: string[],
+  seriesData: number[],
+  updateCategories: (newCategorie: string) => void
+  updateSeriesData: (newData: number) => void
 }
 
 export const useMqttStore = create<State>()(
@@ -66,10 +71,22 @@ export const useMqttStore = create<State>()(
           clientId: '',
           username: '',
           password: '',
-          clientPaho: new Paho.Client("mqtt3.thingspeak.com", 80, "/mqtt", '')
+          clientPaho: new Paho.Client("mqtt3.thingspeak.com", 80, "/mqtt", ''),
+          categories: [],
+          seriesData: []
         })
-      }
+      },
+      //* <----------------  Chart ---------------->
+      categories: [],
+      seriesData: [],
+      updateCategories: (newCategorie: string) => {
+        const { categories } = get()
+        set({ categories: [...categories, newCategorie]})
+      },
+      updateSeriesData: (newData: number) => {
+        const { seriesData } = get()
+        set({ seriesData: [...seriesData, newData] })
+      },
     }),
-   
-  
+    
 )

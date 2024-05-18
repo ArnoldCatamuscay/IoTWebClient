@@ -1,41 +1,38 @@
 import { useEffect, useState } from "react"
 import { useMqttStore } from "../../store/mqtt-store";
 import { ConnectionOptions, SubscribeOptions } from "paho-mqtt";
-import { toast } from "react-toastify";
 import ReactApexChart from "react-apexcharts";
 import axios from "axios";
 
 const ThingSpeakKeys = () => {
   
   const updateClientPaho = useMqttStore(state => state.updateClientPaho);
-  // const clientPaho = useMqttStore(state => state.clientPaho);
-  const {host, port, path, clientPaho, clear} = useMqttStore();
-  // const [isConnected, setIsConnected] = useState(false);
-
-  const handleClearState = () => {
-    clear();
-  }
+  const { host, port, path, clientPaho } = useMqttStore();
 
   //Eje Y
   const [options, setOptions] = useState<ApexCharts.ApexOptions | undefined>();
-  const [categories, setCategories] = useState<string[]>([]);
+  // const [localCategories, setLocalCategories] = useState<string[]>([]);
 
   //Eje X
   const [series, setSeries] = useState<ApexAxisChartSeries | ApexNonAxisChartSeries | undefined>();
-  const [seriesData, setSeriesData] = useState<number[]>([]);
+  // const [localSeriesData, setLocalSeriesData] = useState<number[]>([]);
 
   // Get last weight from ThingSpeak
   const last_weight_url = import.meta.env.VITE_LAST_WEIGHT_URL;
-  
+  const { categories, seriesData } = useMqttStore();
+  const updateCategories = useMqttStore(state => state.updateCategories);
+  const updateSeriesData = useMqttStore(state => state.updateSeriesData);
   const fetchData = async () => {
     try {
       const response = await axios.get(last_weight_url);
       const jsonData = response.data;
       const { feeds } = jsonData;
       if (feeds && feeds.length > 0) {
-        setSeriesData((prevState) => [...prevState, Number(feeds[0].field1)]);
+        // setLocalSeriesData((prevState) => [...prevState, Number(feeds[0].field1)]);
+        updateSeriesData(Number(feeds[0].field1));
         const utcDate = new Date(feeds[0].created_at);
-        setCategories((prevState) => [...prevState, utcDate.toLocaleString()]);
+        // setLocalCategories((prevState) => [...prevState, utcDate.toLocaleString()]);
+        updateCategories(utcDate.toLocaleString());
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -95,12 +92,10 @@ const ThingSpeakKeys = () => {
     setSeries([{
       data: seriesData,
     }])
+    
   }, [seriesData])
 
   useEffect(() => {
-    
-    
-    
     // updateClientPaho();
     // console.log('Channel ID: ', channelId)
     // console.log('Client paho: ', clientPaho!.host, clientPaho!.port, clientPaho!.path, clientPaho!.clientId/*, clientPaho.isConnected()*/);
@@ -108,8 +103,6 @@ const ThingSpeakKeys = () => {
     // clientPaho.onMessageArrived = onMessageArrived;
     // clientPaho.connect(connectOptions);
     // fetchData();
-    
-    
   }, []);
 
   useEffect(() => {
@@ -158,23 +151,6 @@ const ThingSpeakKeys = () => {
     onFailure: () => {console.log('Subscription failed')},
   };
 
-  const handleConnectMqtt = () => {
-    if(clientPaho) {
-      console.log('Client paho: ', clientPaho.clientId);
-      clientPaho.onConnectionLost = onConnectionLost;
-      clientPaho.onMessageArrived = onMessageArrived;
-      clientPaho.connect(connectOptions);
-    }
-  }
-
-  const handleDisconnectMqtt = () => {
-    if(clientPaho) {
-      clientPaho.disconnect();
-      console.log(clientPaho.isConnected());
-      toast.info('Disconnected from Thingspeak');
-    }
-  }
-
   function onConnectionLost(responseObject: any) {
     if (responseObject.errorCode !== 0) {
       console.log("onConnectionLost:"+responseObject.errorMessage);
@@ -187,13 +163,12 @@ const ThingSpeakKeys = () => {
     const { field1, created_at } = payloadJson;
     const utcDate = new Date(created_at);
     console.log('Last write:', field1, 'kg', 'at:', utcDate.toLocaleString());
-    //TODO guardar la ultima lectura y la fecha
-    // setSeriesData([Number(field1)]);
-    setSeriesData((prevState) => [...prevState, Number(field1)]);
-    setCategories((prevState) => [...prevState, utcDate.toLocaleString()]);
+    // setLocalSeriesData((prevState) => [...prevState, Number(field1)]);
+    // setLocalCategories((prevState) => [...prevState, utcDate.toLocaleString()]);
+    updateCategories(utcDate.toLocaleString());
+    updateSeriesData(Number(field1));
   }
   //* End of MQTT
-
 
   const [thingSpeak, setThingSpeak] = useState({
     channelId: '',
@@ -211,7 +186,6 @@ const ThingSpeakKeys = () => {
   const handleUpdateKeys = () => {
     if(thingSpeak.channelId) {
       updateChannelId(thingSpeak.channelId);
-      // updateClientPaho();  
     }
     if(thingSpeak.readApiKey) {
       updateReadApiKey(thingSpeak.readApiKey);
@@ -229,12 +203,13 @@ const ThingSpeakKeys = () => {
     if(thingSpeak.password) {
       updatePassword(thingSpeak.password);
     }
-    // updateClientPaho();
   }
 
   return (
     // <div className="flex-col md:flex-row md:flex-wrap mt-4">
     <div className="mt-4">
+      {/* <h2 className="text-2xl font-bold text-center">Categories: |{categories}|</h2>
+      <h2 className="text-2xl font-bold text-center">Series data: |{seriesData}|</h2> */}
       <div className="ml-2">
         <div>
           {series && options && (
@@ -361,45 +336,6 @@ const ThingSpeakKeys = () => {
               onClick={handleUpdateKeys}
             >
               Actualizar credenciales
-            </button>
-          </div>
-        </div>
-        {/* Button */}
-        <div className="md:flex md:items-center mt-2">
-          <div className="md:w-1/3"></div>
-          <div className="md:w-2/3">
-            <button
-              className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-              type="button"
-              onClick={handleConnectMqtt}
-            >
-              Connect Deprecated
-            </button>
-          </div>
-        </div>
-        {/* Button */}
-        <div className="md:flex md:items-center">
-          <div className="md:w-1/3"></div>
-          <div className="md:w-2/3">
-            <button
-              className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-              type="button"
-              onClick={handleDisconnectMqtt}
-            >
-              Disconnect Deprecated
-            </button>
-          </div>
-        </div>
-        {/* Button */}
-        <div className="md:flex md:items-center">
-          <div className="md:w-1/3"></div>
-          <div className="md:w-2/3">
-            <button
-              className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-              type="button"
-              onClick={handleClearState}
-            >
-              Clear Deprecated
             </button>
           </div>
         </div>
