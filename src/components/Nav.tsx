@@ -2,7 +2,7 @@ import './Nav.css'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { useMqttStore } from '../store/mqtt-store';
 
 const NavBar = () => {
@@ -17,7 +17,7 @@ const NavBar = () => {
       clear();
       setOpen(false);
       await logOut();
-      toast.info("See ya!");
+      toast.info("Hasta luego!");
       navigate('/');
     } catch (error: any) {
       toast.error(error.message); 
@@ -41,11 +41,11 @@ const NavBar = () => {
         {/* MENU */}
         <div onClick={()=>setOpen(!open)} className='absolute right-6 top-4 cursor-pointer md:hidden'>
           { open? 
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#FFFFFF" className="w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
             </svg>
             :
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#FFFFFF" className="w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
           }
