@@ -1,4 +1,3 @@
-import './Register.css'
 import { useAuth } from "../../context/authContext"
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'

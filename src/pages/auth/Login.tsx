@@ -1,4 +1,3 @@
-import './Login.css'
 import { useAuth } from "../../context/authContext"
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner';
@@ -15,7 +14,7 @@ const Login = () => {
     toast.promise(promise, {
       loading: 'Cargando...',
       success: (res: any) => {
-        navigate("/");
+        navigate("/home");
         const username = res.user.displayName === null ? res.user.email : res.user.displayName;
         return 'Bienvenido ' + username;
       },
@@ -37,7 +36,7 @@ const Login = () => {
     toast.promise(promise, {
       loading: 'Cargando...',
       success: (res: any) => {
-        navigate("/");
+        navigate("/home");
         const username = res.user.displayName === null ? res.user.email : res.user.displayName;
         return 'Bienvenido ' + username;
       },

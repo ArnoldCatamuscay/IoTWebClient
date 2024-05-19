@@ -4,7 +4,7 @@ import { ConnectionOptions, SubscribeOptions } from "paho-mqtt";
 import ReactApexChart from "react-apexcharts";
 import axios from "axios";
 
-const ThingSpeakKeys = () => {
+const Dashboard = () => {
   
   const updateClientPaho = useMqttStore(state => state.updateClientPaho);
   const { host, port, path, clientPaho } = useMqttStore();
@@ -371,7 +371,7 @@ const ThingSpeakKeys = () => {
           <div className="md:w-1/3"></div>
           <div className="md:w-2/3">
             <button
-              className="shadow bg-[#073B4C] hover:bg-[#118AB2] focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+              className="shadow bg-[#1a56db] hover:bg-[#1d4ed8] focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
               type="button"
               onClick={handleUpdateKeys}
             >
@@ -385,4 +385,4 @@ const ThingSpeakKeys = () => {
   )
 }
 
-export default ThingSpeakKeys
+export default Dashboard
