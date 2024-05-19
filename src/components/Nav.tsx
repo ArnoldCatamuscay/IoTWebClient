@@ -31,9 +31,9 @@ const NavBar = () => {
     // <div className="bg-[#118AB2] sticky top-0 z-[1] mx-auto  flex w-full flex-wrap items-center justify-between border-b border-gray-100 bg-background font-sans font-bold uppercase text-text-primary backdrop-blur-[100px] dark:border-gray-800 dark:bg-d-background dark:text-d-text-primary">
     // <nav className='bg-[#0d2136] py-3 relative'>
     <nav className='bg-[#0d2136] py-3 sticky top-0 z-[1]'>
-      <div className='container md:mx-auto md:flex px-4 md:px-0'>
+      <div className='container md:mx-auto md:flex px-4 md:px-0 cursor-pointer'>
         {/* LOGO */}
-        <div className='flex flex-grow items-center'>
+        <div className='flex flex-grow items-center' onClick={()=>navigate('/')}>
           <img src="/favicon.png" alt="logo" />
         </div>
         
@@ -60,7 +60,7 @@ const NavBar = () => {
                 {/* LINKS */}
                 <div className='flex flex-col md:flex-row text-center'>
                   <Link to='/home' className='text-white hover:text-[#3f83d6] duration-500 md:mr-7 my-4 md:my-0 mb:text-2xl text-xl' onClick={()=>{setOpen(false)}}>Home</Link>
-                  <Link to='/credentials' className='text-white hover:text-[#3f83d6] duration-500 md:mr-7 my-4 md:my-0 mb:text-2xl text-xl' onClick={()=>{setOpen(false)}}>Dashboard</Link>
+                  <Link to='/dashboard' className='text-white hover:text-[#3f83d6] duration-500 md:mr-7 my-4 md:my-0 mb:text-2xl text-xl' onClick={()=>{setOpen(false)}}>Dashboard</Link>
                 </div>
                 {/* BUTTONS */}
                 <div className='flex flex-col md:flex-row text-center'>
