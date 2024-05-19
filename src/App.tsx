@@ -2,7 +2,7 @@ import './App.css'
 import Login from './pages/auth/Login'
 import Home from './pages/home/Home'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Dashboard from './pages/home/Dashboard'
+import Dashboard from './pages/dashboard/Dashboard'
 import Register from './pages/auth/Register'
 import { AuthProvider } from './context/authContext' 
 import 'react-toastify/dist/ReactToastify.css';
