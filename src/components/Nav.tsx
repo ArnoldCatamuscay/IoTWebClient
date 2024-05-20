@@ -10,11 +10,13 @@ const NavBar = () => {
   const navigate = useNavigate();
   const clientPaho = useMqttStore(state => state.clientPaho);
   const clear = useMqttStore(state => state.clear);
+  const updateKeysSetted = useMqttStore(state => state.updateKeysSetted);
 
   const handleLogOut = async () => {
     try {
       if(clientPaho.isConnected()) clientPaho.disconnect();
       clear();
+      updateKeysSetted(false);
       setOpen(false);
       await logOut();
       toast.info("Hasta luego!");
@@ -34,7 +36,7 @@ const NavBar = () => {
       <div className='container md:mx-auto md:flex px-4 md:px-0'>
         {/* LOGO */}
         <div className='flex flex-grow items-center' >
-          <img src="/favicon.png" alt="logo" className='cursor-pointer' onClick={()=>navigate('/')}/>
+          <img src="/favicon.png" alt="logo" className='cursor-pointer' onClick={()=>{setOpen(false);navigate('/')}}/>
         </div>
         
         
@@ -61,6 +63,7 @@ const NavBar = () => {
                 <div className='flex flex-col md:flex-row text-center'>
                   <Link to='/home' className='text-white hover:text-[#3f83d6] duration-500 md:mr-7 my-4 md:my-0 mb:text-2xl text-xl' onClick={()=>{setOpen(false)}}>Home</Link>
                   <Link to='/dashboard' className='text-white hover:text-[#3f83d6] duration-500 md:mr-7 my-4 md:my-0 mb:text-2xl text-xl' onClick={()=>{setOpen(false)}}>Dashboard</Link>
+                  <Link to='/account' className='text-white hover:text-[#3f83d6] duration-500 md:mr-7 my-4 md:my-0 mb:text-2xl text-xl' onClick={()=>{setOpen(false)}}>Account</Link>
                 </div>
                 {/* BUTTONS */}
                 <div className='flex flex-col md:flex-row text-center'>

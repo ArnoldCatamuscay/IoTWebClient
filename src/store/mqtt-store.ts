@@ -15,6 +15,7 @@ interface State {
   username: string 
   password: string 
   clientPaho: Paho.Client
+  keysSetted: boolean
   //Update functions
   updateChannelId: (newChannelId: string) => void
   updateReadApiKey: (newReadApiKey: string) => void
@@ -23,6 +24,7 @@ interface State {
   updateUsername: (newUsername: string) => void
   updatePassword: (newPassword: string) => void
   updateClientPaho: () => void
+  updateKeysSetted: (newValue: boolean) => void
   //clear
   clear: () => void
   //Chart
@@ -45,6 +47,7 @@ export const useMqttStore = create<State>()(
       username: '',
       password: '',
       clientPaho: new Paho.Client("mqtt3.thingspeak.com", 80, "/mqtt", ''),
+      keysSetted: false,
       //* <----------------  Updates ---------------->
       updateChannelId: (newChannelId: string) => {
         set({ channelId: newChannelId })
@@ -62,6 +65,7 @@ export const useMqttStore = create<State>()(
         const newClientPaho = new Paho.Client("mqtt3.thingspeak.com", 80, "/mqtt", clientId)
         set({ clientPaho: newClientPaho })
       },
+      updateKeysSetted: (newValue: boolean) => set({ keysSetted: newValue }),
       //* <----------------  Clear ---------------->
       clear: () => {
         set({ 
