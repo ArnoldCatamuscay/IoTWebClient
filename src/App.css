@@ -1,0 +1,8 @@
+@media (max-width: 640px) {
+  .hidden-img {
+    display: none;
+    size: 0px;
+    height: 0%;
+    width: 0%;
+  }
+}

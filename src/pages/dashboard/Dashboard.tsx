@@ -242,6 +242,10 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+      <div className=" grid grid-cols-2 place-items-center">
+        <img src="/dog-landing.png" className="h-40 w-50 sm:h-60 sm:w-70 sm:mt-9"/>
+        <img src="/card-6.png" className="h-70 w-80 md:h-90 md:w-100"/>
+      </div>
     </div>
   )
 }
