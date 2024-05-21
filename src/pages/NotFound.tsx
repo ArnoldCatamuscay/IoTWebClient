@@ -14,7 +14,7 @@ const NotFound = () => {
             </Link>
           </div>   
           <div className="flex justify-center md:justify-start">
-            <img src="/404-computer.svg"/>
+            <img src="/not-found.webp" className="h-70 w-80"/>
           </div>
         </div>
       </section>

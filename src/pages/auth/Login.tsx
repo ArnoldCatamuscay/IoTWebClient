@@ -121,7 +121,7 @@ const Login = () => {
           {/* right side */}
           <div className="relative">
             <img
-              src="login.jpg"
+              src="login.webp"
               alt="img"
               className="w-[400px] h-full hidden rounded-r-2xl md:block object-cover"
             />

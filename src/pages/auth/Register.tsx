@@ -120,7 +120,7 @@ const Register = () => {
           {/* right side */}
           <div className="relative">
             <img
-              src="register.jpg"
+              src="register.webp"
               alt="img"
               className="w-[400px] h-full hidden rounded-r-2xl md:block object-cover"
             />
