@@ -1,14 +1,22 @@
-import { collection, doc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { useAuth } from "../../context/authContext";
 import { db } from "../../firebase/firebase-config";
 import { useMqttStore } from "../../store/mqtt-store";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Account = () => {
   const { user, loading } = useAuth();
   const clientPaho = useMqttStore(state => state.clientPaho);
+  const keysSetted = useMqttStore(state => state.keysSetted);
   const clear = useMqttStore(state => state.clear);
+  const updateChannelId = useMqttStore(state => state.updateChannelId);
+  const updateReadApiKey = useMqttStore(state => state.updateReadApiKey);
+  const updateWriteApiKey = useMqttStore(state => state.updateWriteApiKey);
+  const updateClientId = useMqttStore(state => state.updateClientId);
+  const updateUsername = useMqttStore(state => state.updateUsername);
+  const updatePassword = useMqttStore(state => state.updatePassword);
+  const updateClientPaho = useMqttStore(state => state.updateClientPaho);
   const updateKeysSetted = useMqttStore(state => state.updateKeysSetted);
 
   //* Creamos o actualizamos las keys en Firestore
@@ -76,6 +84,32 @@ const Account = () => {
   //     updatePassword(thingSpeak.passwordTS);
   //   }
   // }
+
+  //* Obtenemos las keys de Firestore para asignarlas en el estado global
+  const getKeys = async () => {
+    const docRef = doc(db, "keys", user.email);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists() && !keysSetted) { 
+      console.log("Document data:", docSnap.data());
+      updateChannelId(docSnap.data().channelId);
+      updateReadApiKey(docSnap.data().readApiKey);
+      updateWriteApiKey(docSnap.data().writeApiKey);
+      updateClientId(docSnap.data().clientId);
+      updateUsername(docSnap.data().username);
+      updatePassword(docSnap.data().password);
+      updateClientPaho();
+      updateKeysSetted(true); 
+    } else if (!docSnap.exists()) {
+      console.log("No such document!");
+    } else if (keysSetted) {
+      console.log("Already set!");
+    }
+  }
+
+  useEffect(() => {
+    getKeys();
+  },[]);
 
   if(loading) return <h1>Loading...</h1>
 
