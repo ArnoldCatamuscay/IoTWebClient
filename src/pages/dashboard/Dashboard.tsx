@@ -6,6 +6,7 @@ import axios from "axios";
 import { db } from "../../firebase/firebase-config";
 import { doc, getDoc } from "firebase/firestore";
 import { useAuth } from "../../context/authContext";
+import { toast } from "sonner";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -205,7 +206,10 @@ const Dashboard = () => {
       console.log("Conected to Thingspeak via Websocket!!");
       clientPaho!.subscribe(`channels/${channelId}/subscribe`, subscribeOptions);
     },
-    onFailure: () => {console.log('Failed to connect...')},
+    onFailure: () => {
+      console.log('Failed to connect...')
+      toast.error('No se pudo conectar al servidor. Verifique las claves de conexión.');
+    },
   };
 
   const subscribeOptions: SubscribeOptions = {

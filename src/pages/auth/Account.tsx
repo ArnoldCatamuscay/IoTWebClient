@@ -63,28 +63,6 @@ const Account = () => {
     setThingSpeak({...thingSpeak, [name]: value})
   }
 
-  // const handleUpdateKeys = () => {
-  //   if(thingSpeak.channelId) {
-  //     updateChannelId(thingSpeak.channelId);
-  //   }
-  //   if(thingSpeak.readApiKey) {
-  //     updateReadApiKey(thingSpeak.readApiKey);
-  //   }
-  //   if(thingSpeak.writeApiKey) {
-  //     updateWriteApiKey(thingSpeak.writeApiKey);
-  //   }
-  //   if(thingSpeak.clientId) {
-  //     updateClientId(thingSpeak.clientId);
-  //     updateClientPaho();
-  //   }
-  //   if(thingSpeak.usernameTS) {
-  //     updateUsername(thingSpeak.usernameTS);
-  //   }
-  //   if(thingSpeak.passwordTS) {
-  //     updatePassword(thingSpeak.passwordTS);
-  //   }
-  // }
-
   //* Obtenemos las keys de Firestore para asignarlas en el estado global
   const getKeys = async () => {
     const docRef = doc(db, "keys", user.email);
@@ -137,7 +115,7 @@ const Account = () => {
               </div>
 
               <div className="flex justify-center items-center">
-                <img className="w-24 h-24 mb-3 rounded-full shadow-lg bg-[#2563eb]" src="/profile.webp" alt="User image"/>
+                <img className="w-24 h-24 mb-3 rounded-full shadow-lg bg-[#2563eb]" src={user.photoURL || "/profile.webp"} alt="User image"/>
               </div>
               
               {/* bottom form with input fields  */}
@@ -153,7 +131,7 @@ const Account = () => {
                     className="w-full p-2 bg-[#374151] border-2 border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-white focus:outline-none focus:border-blue-500"
                     name="displayName"
                     id="displayName"
-                    placeholder="Nombre de usuario"
+                    placeholder={user.displayName || user.email.split('@')[0]}
                     // onChange={handleOnChange}
                   />
                 </div>
@@ -168,7 +146,7 @@ const Account = () => {
                     className="w-full p-2 bg-[#374151] border-2 border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-white focus:outline-none"
                     name="userEmail"
                     id="userEmail"
-                    placeholder="Correo electronico"
+                    placeholder={user.email}
                     readOnly={true}
                   />
                 </div>
@@ -188,7 +166,7 @@ const Account = () => {
 
               </button>
               
-              <button onClick={()=>{alert('Boton guardar cambios cuenta'); }} className="sm:w-auto w-full justify-center py-2 px-4 bg-[#1a56db] hover:bg-[#1d4ed8] rounded-md flex items-center gap-2 hover:scale-95 transition-all">
+              <button onClick={()=>{alert('Boton guardar cambios cuenta'); console.log(user, user.photoURL)}} className="sm:w-auto w-full justify-center py-2 px-4 bg-[#1a56db] hover:bg-[#1d4ed8] rounded-md flex items-center gap-2 hover:scale-95 transition-all">
                 <span className="text-lg">Guardar Cambios</span>
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
