@@ -8,7 +8,7 @@ const Landing = () => {
         <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row items-center justify-between">
                 <div className="md:w-1/2 mb-8 md:mb-0">
-                    <h1 className="text-white font-bold font-mono text-4xl leading-tight mb-6">¡La alimentación inteligente para tu mascota!</h1>
+                    <h1 className="text-white font-bold font-mono text-4xl leading-tight mb-6">Comedog: alimentación inteligente para tu mascota</h1>
                     <p className="text-slate-100 text-xl mb-8 font-mono">
                     Dispensa comida a distancia y monitorea en tiempo real la cantidad en su plato. Asegura la porción perfecta siempre, desde cualquier lugar.
                     </p>

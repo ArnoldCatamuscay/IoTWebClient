@@ -1,3 +1,91 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Body del reloj */
+.MuiPickersLayout-root {
+  background-color: #031525;
+}
+
+/* Color de los numeros del reloj */
+.MuiClockNumber-root  {
+  color: white !important;
+}
+
+/* Color de los numeros del reloj cuando están en el circulo azul */
+.Mui-selected {
+  color: white !important;
+}
+/* Boton < o > cuando no se puede dar click */
+.MuiButtonBase-root.MuiIconButton-root.Mui-disabled {
+  color: #CAF0F8 !important;
+}
+
+/* Boton < o > cuando se puede dar click */
+.MuiButtonBase-root {
+  color: #00B4D8 !important;
+}
+
+/* Color de los botones cancel y ok */
+.MuiButtonBase-root.MuiButton-text {
+  color: aqua !important;
+}
+
+/* Botones de horario, cancel y ok */
+.MuiButtonBase-root.MuiButton-root:hover {
+  /* background-color: black !important; */
+  color: white !important;
+}
+
+
+/* ter */
+
+/** PARTE SUPERIOR DEL RELOJ */
+
+/* Header del reloj */
+.MuiPickersToolbar-root {
+  background-color: #0d2136;
+  font-family: cursive;
+}
+
+/* Select time y --:-- */
+.MuiTypography-root {
+  color: white !important;
+} 
+/* Select time */
+.MuiTypography-overline {
+  /* color: chocolate !important; */
+} 
+/* Select time sobreescribe al de arriba */
+.css-1hbyad5-MuiTypography-root {
+  /* color: white !important; */
+}
+
+/* Hora, minutos y am/pm sleccionados */
+.Mui-selected.MuiPickersToolbarText-root {
+  color: #007ea7 !important;
+}
+
+/** INPUT FIELD */
+
+/* Borde del input */
+.MuiOutlinedInput-notchedOutline {
+  /* border-color: green !important; */
+}
+
+/* Texto del input sin hacer hover ni nada */
+.MuiInputBase-input {
+  color: white !important;
+}
+
+/* Texto del label "Horario"  */
+.MuiFormLabel-root {
+  color: white !important;
+}
+
+/* Texto del input(label y valor) al hacer hover */
+.MuiTextField-root :hover {
+  /* border: rgb(255, 0, 200) !important;
+  border-color: rgb(255, 0, 200) !important;
+  color: rgb(255, 0, 200) !important; */
+}
