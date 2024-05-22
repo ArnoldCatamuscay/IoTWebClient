@@ -1,5 +1,4 @@
 import { useAuth } from "../../context/authContext";
-
 const Home = () => {
   const { user, loading } = useAuth();
 
@@ -17,6 +16,7 @@ const Home = () => {
           <img src="/dog-home.webp" className="h-70 w-80 md:h-90 md:w-100"/>
           <img src="/cat-home.webp" className="h-40 w-50 sm:h-60 sm:w-70 sm:mt-9"/>
         </div>
+        
       </div>
     </>
   )
