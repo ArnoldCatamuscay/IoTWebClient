@@ -41,12 +41,12 @@ export const useMqttStore = create<State>()(
       readApiKey: '',
       writeApiKey: '',
       host: 'mqtt3.thingspeak.com', 
-      port: 80, 
+      port: 443, 
       path: '/mqtt', 
       clientId: '',
       username: '',
       password: '',
-      clientPaho: new Paho.Client("mqtt3.thingspeak.com", 80, "/mqtt", ''),
+      clientPaho: new Paho.Client("mqtt3.thingspeak.com", 443, "/mqtt", ''),
       keysSetted: false,
       //* <----------------  Updates ---------------->
       updateChannelId: (newChannelId: string) => {
@@ -62,7 +62,7 @@ export const useMqttStore = create<State>()(
       updateClientPaho: () => {
         const { clientId } = get()
         console.log('clientId from MQTT-STORE: ', clientId)
-        const newClientPaho = new Paho.Client("mqtt3.thingspeak.com", 80, "/mqtt", clientId)
+        const newClientPaho = new Paho.Client("mqtt3.thingspeak.com", 443, "/mqtt", clientId)
         set({ clientPaho: newClientPaho })
       },
       updateKeysSetted: (newValue: boolean) => set({ keysSetted: newValue }),
@@ -75,7 +75,7 @@ export const useMqttStore = create<State>()(
           clientId: '',
           username: '',
           password: '',
-          clientPaho: new Paho.Client("mqtt3.thingspeak.com", 80, "/mqtt", ''),
+          clientPaho: new Paho.Client("mqtt3.thingspeak.com", 443, "/mqtt", ''),
           categories: [],
           seriesData: []
         })

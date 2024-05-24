@@ -5,12 +5,12 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FB_API_KEY,
-  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_MESSAGE_SENDER_ID,
-  appId: import.meta.env.VITE_APP_ID
+  apiKey: 'AIzaSyC6kEl39DKBGOKBCT8DJYm9apcW_ScYZ5Y',
+  authDomain: 'iot-react-9540f.firebaseapp.com',
+  projectId: 'iot-react-9540f',
+  storageBucket: 'iot-react-9540f.appspot.com',
+  messagingSenderId: '299346434599',
+  appId: '1:299346434599:web:ff9f79037bad674e898c02'
 };
 
 // Initialize Firebase
