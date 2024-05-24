@@ -100,7 +100,7 @@ const Account = () => {
         {/* division with floating form  */}
         <div className="  rounded shadow overflow-hidden text-white">
           {/* form / left div  */}
-          <div className="p-2 md:p-4 h-full bg-gray-800 col-span-2">
+          <div className="p-2 md:p-4 h-full bg-[#0d2136] col-span-2">
             <form>
               {/* form top part containing mail icon and heading  */}
               <div className="flex flex-row justify-center items-center p-4 ">
@@ -188,7 +188,7 @@ const Account = () => {
           </div>
         </div>
         {/* division with floating form  */}
-        <div className="rounded shadow overflow-hidden text-white md:mb-0 mb-8"> {/* Clase de la card del formulario */}
+        <div className="rounded overflow-hidden text-white md:mb-0 mb-8"> {/* Clase de la card del formulario */}
           <img src="/account.webp" alt="User image" className="hidden-img"/>
         </div>
       </div>
@@ -196,14 +196,14 @@ const Account = () => {
       <div className=" md:grid grid-cols-2 md:gap-4 place-items-center my-4 mx-4 grid-cols-equal">
 
         {/* division with floating form  */}
-        <div className="rounded shadow overflow-hidden text-white md:mb-0 mb-8"> {/* Clase de la card del formulario */}
+        <div className="rounded overflow-hidden text-white md:mb-0 mb-8"> {/* Clase de la card del formulario */}
           <img src="/card-2.webp" alt="User image" className="hidden-img"/>
         </div>
         {/* division with floating form  */}
         <div
           className="  rounded shadow overflow-hidden text-white">
           {/* form / left div  */}
-          <div className="p-2 md:p-4 h-full bg-gray-800 col-span-2">
+          <div className="p-2 md:p-4 h-full bg-[#0d2136] col-span-2">
             <form>
               {/* form top part containing mail icon and heading  */}
               <div className="flex flex-row justify-around items-start md:items-center p-4 ">

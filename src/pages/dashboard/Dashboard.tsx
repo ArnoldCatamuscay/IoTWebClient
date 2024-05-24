@@ -208,6 +208,7 @@ const Dashboard = () => {
     password: password,
     keepAliveInterval: 60, // Optional (default 60)
     reconnect: true,
+    useSSL: true,
     onSuccess: () => {
       console.log("Conected to Thingspeak via Websocket!!");
       clientPaho!.subscribe(`channels/${channelId}/subscribe`, subscribeOptions);
