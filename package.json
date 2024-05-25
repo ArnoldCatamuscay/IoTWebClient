@@ -31,6 +31,7 @@
     "react-router-dom": "^6.23.1",
     "react-toastify": "^10.0.5",
     "sonner": "^1.4.41",
+    "sweetalert2": "^11.11.0",
     "zustand": "^4.5.2"
   },
   "devDependencies": {

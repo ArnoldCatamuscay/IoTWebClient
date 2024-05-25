@@ -7,6 +7,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   sendPasswordResetEmail,
+  updateProfile,
+  deleteUser,
 } from "firebase/auth";
 import { auth } from "../firebase/firebase-config";
 
@@ -39,6 +41,10 @@ export function AuthProvider({ children }: any) {
 
   const resetPassword = (email: string) => sendPasswordResetEmail(auth, email);
 
+  const updateDisplayName = (newDisplayName: string) => updateProfile(user, { displayName: newDisplayName });
+
+  const deleteAccount = () => deleteUser(user);
+
   useEffect(() => {
     const unsubuscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -55,6 +61,8 @@ export function AuthProvider({ children }: any) {
         logOut, 
         loginWithGoogle,
         resetPassword,
+        updateDisplayName,
+        deleteAccount,
         user, 
         loading 
       }}

@@ -95,7 +95,7 @@ const Dashboard = () => {
         text: 'Sensor de peso',
         align: 'center',
         style: {
-          color: '#98938c'
+          color: '#FFFFFF'
         }
       },
       markers: {
@@ -106,28 +106,29 @@ const Dashboard = () => {
         // range: XAXISRANGE,
         categories: categories,
         title: {
-          text: 'Fecha y hora',
+          text: 'Hora',
           style: {
-            color: '#98938c'
+            color: '#FFFFFF'
           }
         },
         labels: {
           style: {
-            colors: '#98938c'
+            colors: '#8aa088'
           }
         }
       },
       yaxis: {
+        min: 0,
         max: 100,
         title: {
           text: 'Peso (kg)',
           style: {
-            color: '#98938c'
+            color: '#FFFFFF'
           }
         },
         labels: {
           style: {
-            colors: '#98938c'
+            colors: '#8aa088'
           }
         }
       },
@@ -144,7 +145,7 @@ const Dashboard = () => {
         },
         xaxis: {
           lines: {
-            show: true
+            show: false
           }
         }
       }
@@ -154,7 +155,7 @@ const Dashboard = () => {
     setSeries([{
       data: seriesData,
       name: 'Peso (kg)',
-      color: '#5085de'
+      color: '#5085de',
     }])
     
   }, [seriesData])

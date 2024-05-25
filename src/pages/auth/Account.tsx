@@ -1,12 +1,13 @@
-import { collection, doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { useAuth } from "../../context/authContext";
 import { db } from "../../firebase/firebase-config";
 import { useMqttStore } from "../../store/mqtt-store";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import Swal from 'sweetalert2'
 
 const Account = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, updateDisplayName, deleteAccount } = useAuth();
   const clientPaho = useMqttStore(state => state.clientPaho);
   const keysSetted = useMqttStore(state => state.keysSetted);
   const clear = useMqttStore(state => state.clear);
@@ -59,6 +60,11 @@ const Account = () => {
     passwordTS: '',
   });
 
+  const [userProfile, setUserProfile] = useState({
+    photoURL: '',
+    displayName: '',
+  });
+
   const handleOnChange = ( {target: {name, value}}: any) => {
     setThingSpeak({...thingSpeak, [name]: value})
   }
@@ -83,6 +89,66 @@ const Account = () => {
     } else if (keysSetted) {
       console.log("Already set!");
     }
+  }
+
+  const handleUpdateDisplayName = () => {
+    // alert('Display name: ' + userProfile.displayName);
+    const promise = updateDisplayName(userProfile.displayName);
+    toast.promise(promise, {
+      loading: 'Actualizando...',
+      success: (/*res: any*/) => {
+        return 'Nombre de usuario actualizado correctamente!';
+      },
+      error: (error: any) => {
+        console.log(error)
+        return error;
+      },
+    });
+  }
+
+  const handleDeleteUser = async () => {
+    Swal.fire({
+      title: "<h5 style='color:white'>¿Está segur@ que desea eliminar su cuenta?</h5>",
+      // text: "<p style='color:red'>¿Está segur@ que desea eliminar su cuenta?</p>",
+      // icon: "warning",
+      // iconColor: "white",
+      imageUrl: "/card-6.png",
+      imageWidth: 200,
+      imageHeight: 200,
+      imageAlt: "Custom image",
+      showCancelButton: true,
+      background: "#0d2136",
+      confirmButtonColor: "#1a56db",
+      cancelButtonColor: "#374151",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteDoc(doc(db, "keys", user.email)).then(() => {
+          const promise = deleteAccount();
+          toast.promise(promise, {
+            loading: 'Eliminando cuenta...',
+            success: () => {
+              if(clientPaho.isConnected()) clientPaho.disconnect();
+              clear();
+              updateKeysSetted(false);
+              return 'Cuenta eliminada correctamente!';
+            },
+            error: (error: any) => {
+              console.log(error)
+              return error;
+            },
+          });  
+        });
+      }
+    });
+
+
+    
+  }
+
+  const handleChangeProfile = ( {target: {name, value}}: any) => {
+    setUserProfile({...user, [name]: value})
   }
 
   useEffect(() => {
@@ -132,7 +198,7 @@ const Account = () => {
                     name="displayName"
                     id="displayName"
                     placeholder={user.displayName || user.email.split('@')[0]}
-                    // onChange={handleOnChange}
+                    onChange={handleChangeProfile}
                   />
                 </div>
 
@@ -158,7 +224,7 @@ const Account = () => {
             <div className="sm:flex items-center justify-center gap-4 space-y-4 sm:space-y-0 ms-4 me-4 sm:ms-0 sm:me-0">
               {/* submit button  */}
               {/* text-gray-900 focus:outline-none bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 */}
-              <button onClick={()=>{alert('Boton eliminar cuenta'); }} className="sm:w-auto w-full justify-center py-2 px-4 rounded-md flex items-center gap-2 hover:scale-95 transition-all text-gray-900 focus:outline-none bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+              <button onClick={handleDeleteUser} className="sm:w-auto w-full justify-center py-2 px-4 rounded-md flex items-center gap-2 hover:scale-95 transition-all text-gray-900 focus:outline-none bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                 <span className="text-lg">Eliminar cuenta</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M22 10.5h-6m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM4 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 10.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
@@ -166,7 +232,7 @@ const Account = () => {
 
               </button>
               
-              <button onClick={()=>{alert('Boton guardar cambios cuenta'); console.log(user, user.photoURL)}} className="sm:w-auto w-full justify-center py-2 px-4 bg-[#1a56db] hover:bg-[#1d4ed8] rounded-md flex items-center gap-2 hover:scale-95 transition-all">
+              <button onClick={handleUpdateDisplayName} className="sm:w-auto w-full justify-center py-2 px-4 bg-[#1a56db] hover:bg-[#1d4ed8] rounded-md flex items-center gap-2 hover:scale-95 transition-all">
                 <span className="text-lg">Guardar Cambios</span>
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
