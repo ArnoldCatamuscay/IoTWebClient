@@ -12,6 +12,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 // import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 // import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
+import Datatable, { TableStyles, createTheme } from "react-data-table-component";
 
 const Dashboard = () => {
   const [selectedTime, setSelectedTime] = useState<any>(null)
@@ -241,6 +242,75 @@ const Dashboard = () => {
     updateSeriesData(Number(field1));
   }
   //* End of MQTT
+  const Button = () => <button type="button">Download</button>;
+  const columns: any = [
+    {
+      name: 'Horario',
+      selector: (row: any) => row.horario
+    },
+    {
+      name: 'Eliminar',
+      cell: () => 
+        <button  onClick={()=>{alert('Boton eliminar horario'); }} className="w-auto justify-center p-1.5 rounded-md flex items-center gap-2 hover:scale-95 transition-all text-gray-900 focus:outline-none bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9.75 14.25 12m0 0 2.25 2.25M14.25 12l2.25-2.25M14.25 12 12 14.25m-2.58 4.92-6.374-6.375a1.125 1.125 0 0 1 0-1.59L9.42 4.83c.21-.211.497-.33.795-.33H19.5a2.25 2.25 0 0 1 2.25 2.25v10.5a2.25 2.25 0 0 1-2.25 2.25h-9.284c-.298 0-.585-.119-.795-.33Z" />
+          </svg>
+        </button>,
+    },
+  ]
+
+  const data = [
+    {
+      horario: '09:00' 
+    },
+    {
+      horario: '12:30' 
+    },
+    {
+      horario: '16:00' 
+    },
+    {
+      horario: '20:00' 
+    },
+  ]
+
+  //  Internally, customStyles will deep merges your customStyles with the default styling.
+  const customStyles: TableStyles = {
+    rows: {
+      style: {
+        fontSize: '16px',
+      },
+    },
+    headCells: {
+      style: {
+        fontSize: '18px',
+        justifyContent: 'center',
+      },
+    },
+    cells: {
+      style: {
+        justifyContent: 'center',
+      },
+    },
+  };
+
+  // createTheme creates a new theme named solarized that overrides the build in dark theme
+  createTheme('solarized', {
+    text: {
+      primary: '#FFFFFF',
+      // secondary: '#2aa198',
+    },
+    background: {
+      default: '#0d2136',
+    },
+    context: {
+      // background: '#cb4b16',
+      text: '#FFFFFF',
+    },
+    divider: {
+      default: '#073642',
+    },
+  });
   
   console.log(selectedTime)
   console.log('Fecha y hora:', selectedTime?.$d)
@@ -250,12 +320,21 @@ const Dashboard = () => {
     // <div className="flex-col md:flex-row md:flex-wrap mt-4">
     <div className="mt-4">
       
-      
       {/* Imagenes */}
       {/* <div className=" grid grid-cols-2 place-items-center">
         <img src="/dog-landing.png" className="h-40 w-50 sm:h-60 sm:w-70 sm:mt-9"/>
         <img src="/card-6.png" className="h-70 w-80 md:h-90 md:w-100"/>
       </div> */}
+
+      {/* Primera fila: Gráfico de peso */}
+      {/* <div className="ml-2 mr-1"> */}
+      <div className="my-4 px-4 mr-1">
+        <div className="bg-[#0d2136] px-2">
+          {series && options && (
+            <ReactApexChart options={options} series={series} type="line" height={350} />
+          )}
+        </div>
+      </div>
       
       {/* Segunda fila: Peso máximo y Horarios */}
       <div className="sm:flex items-center justify-center my-4 sm:space-x-10 space-y-4 sm:space-y-0">
@@ -334,43 +413,34 @@ const Dashboard = () => {
               </svg>
             </button>
 
-            <button onClick={()=>{alert('Boton eliminar horario'); }} className="w-auto justify-center py-3.5 px-3.5 rounded-md flex items-center gap-2 hover:scale-95 transition-all text-gray-900 focus:outline-none bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-              {/* <span className="text-xl">Eliminar</span> */}
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9.75 14.25 12m0 0 2.25 2.25M14.25 12l2.25-2.25M14.25 12 12 14.25m-2.58 4.92-6.374-6.375a1.125 1.125 0 0 1 0-1.59L9.42 4.83c.21-.211.497-.33.795-.33H19.5a2.25 2.25 0 0 1 2.25 2.25v10.5a2.25 2.25 0 0 1-2.25 2.25h-9.284c-.298 0-.585-.119-.795-.33Z" />
-              </svg>
-            </button>
-
           </div>
 
-          <div className="py-3 flex items-center text-sm text-white before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6">
-            o
+          {/* Lista de horarios */}
+          <div className="bg-[#0d2136] rounded-lg mx-4 sm:mx-0">
+            <Datatable
+              // title="Horarios de alimentación"
+              columns={columns}
+              data={data}
+              // selectableRows={true}
+              // selectableRowsSingle={true}
+              onSelectedRowsChange={(data: any) => console.log(data)}
+              customStyles={customStyles}
+              theme="solarized"
+            />
           </div>
-
-          {/* Boton Dispensar Ahora */}
-          <div className="flex justify-center">
-            <button onClick={()=>{alert('Boton dispensar ahora'); }} className="text-white w-auto justify-center py-3.5 px-3.5 bg-[#1a56db] hover:bg-[#1d4ed8] rounded-md flex items-center gap-2 hover:scale-95 transition-all">
-              <span className="text-xl">Dispensar ahora</span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 3.75H6.912a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859M12 3v8.25m0 0-3-3m3 3 3-3" />
-              </svg>
-            </button>
-          </div>
-
+        
         </div>
 
-      </div>
-
-      {/* Primera fila: Gráfico de peso */}
-      {/* <h2 className="text-2xl font-bold text-center">Categories: |{categories}|</h2>
-      <h2 className="text-2xl font-bold text-center">Series data: |{seriesData}|</h2> */}
-      {/* <div className="ml-2 mr-1"> */}
-      <div className="my-4 px-4 mr-1">
-        <div className="bg-[#0d2136] px-2">
-          {series && options && (
-            <ReactApexChart options={options} series={series} type="line" height={350} />
-          )}
+        {/* Boton Dispensar Ahora */}
+        <div className="flex justify-center">
+          <button onClick={()=>{alert('Boton dispensar ahora'); }} className="text-white w-auto justify-center py-3.5 px-3.5 bg-[#1a56db] hover:bg-[#1d4ed8] rounded-md flex items-center gap-2 hover:scale-95 transition-all">
+            <span className="text-xl">Dispensar ahora</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 3.75H6.912a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859M12 3v8.25m0 0-3-3m3 3 3-3" />
+            </svg>
+          </button>
         </div>
+
       </div>
 
     </div>
