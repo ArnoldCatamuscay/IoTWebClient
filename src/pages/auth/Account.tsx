@@ -4,6 +4,7 @@ import { db } from "../../firebase/firebase-config";
 import { useMqttStore } from "../../store/mqtt-store";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import Swal from 'sweetalert2'
 
 const Account = () => {
   const { user, loading, updateDisplayName, deleteAccount } = useAuth();
@@ -106,25 +107,47 @@ const Account = () => {
   }
 
   const handleDeleteUser = async () => {
-    await deleteDoc(doc(db, "keys", user.email));
-    
-    const promise2 = deleteAccount();
-    toast.promise(promise2, {
-      loading: 'Eliminando cuenta...',
-      success: (/*res: any*/) => {
-        if(clientPaho.isConnected()) clientPaho.disconnect();
-        clear();
-        updateKeysSetted(false);
-        return 'Cuenta eliminada correctamente!';
-      },
-      error: (error: any) => {
-        console.log(error)
-        return error;
-      },
+    Swal.fire({
+      title: "<h5 style='color:white'>¿Está segur@ que desea eliminar su cuenta?</h5>",
+      // text: "<p style='color:red'>¿Está segur@ que desea eliminar su cuenta?</p>",
+      // icon: "warning",
+      // iconColor: "white",
+      imageUrl: "/card-6.png",
+      imageWidth: 200,
+      imageHeight: 200,
+      imageAlt: "Custom image",
+      showCancelButton: true,
+      background: "#0d2136",
+      confirmButtonColor: "#1a56db",
+      cancelButtonColor: "#374151",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteDoc(doc(db, "keys", user.email)).then(() => {
+          const promise = deleteAccount();
+          toast.promise(promise, {
+            loading: 'Eliminando cuenta...',
+            success: () => {
+              if(clientPaho.isConnected()) clientPaho.disconnect();
+              clear();
+              updateKeysSetted(false);
+              return 'Cuenta eliminada correctamente!';
+            },
+            error: (error: any) => {
+              console.log(error)
+              return error;
+            },
+          });  
+        });
+      }
     });
+
+
+    
   }
 
-  const handleChange = ( {target: {name, value}}: any) => {
+  const handleChangeProfile = ( {target: {name, value}}: any) => {
     setUserProfile({...user, [name]: value})
   }
 
@@ -175,7 +198,7 @@ const Account = () => {
                     name="displayName"
                     id="displayName"
                     placeholder={user.displayName || user.email.split('@')[0]}
-                    onChange={handleChange}
+                    onChange={handleChangeProfile}
                   />
                 </div>
 

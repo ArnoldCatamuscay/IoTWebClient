@@ -17,3 +17,13 @@ body {
   font-weight: 400;
   font-style: normal; */
 }
+
+.swal2-title{
+  /* background-color: aqua; */
+  padding-top: 0%;
+}
+
+.swal2-image {
+  margin-top: 0%;
+  margin-bottom: 0%;
+}
