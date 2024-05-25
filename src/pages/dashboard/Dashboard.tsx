@@ -261,7 +261,7 @@ const Dashboard = () => {
       <div className="sm:flex items-center justify-center my-4 sm:space-x-10 space-y-4 sm:space-y-0">
 
         {/* Cantidad máxima de peso */}
-        <div className="bg-[#1f2937] px-4 pb-6 rounded-lg mx-4 sm:mx-0">
+        <div className="bg-[#0d2136] px-4 pb-6 rounded-lg mx-4 sm:mx-0">
           
           {/* Heading and Icon */}
           <div className="flex flex-row justify-center items-center p-4 text-white">
@@ -292,7 +292,7 @@ const Dashboard = () => {
         </div>
 
         {/* Horarios y Dispensar Ahora */}
-        <div className="bg-[#1f2937] px-4 pb-6 rounded-lg mx-4 sm:mx-0">
+        <div className="bg-[#0d2136] px-4 pb-6 rounded-lg mx-4 sm:mx-0">
           {/* Heading and Icon  */}
           <div className="flex flex-row justify-center items-center p-4 text-white">
             <h2 className="text-xl md:text-2xl font-semibold mr-2">Establecer horarios</h2>
