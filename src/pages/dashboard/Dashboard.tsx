@@ -9,9 +9,9 @@ import { useAuth } from "../../context/authContext";
 import { toast } from "sonner";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-// import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
-// import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
+import Datatable, { TableStyles, createTheme } from "react-data-table-component";
+import Swal from "sweetalert2";
 
 const Dashboard = () => {
   const [selectedTime, setSelectedTime] = useState<any>(null)
@@ -21,7 +21,7 @@ const Dashboard = () => {
   const path = useMqttStore(state => state.path);
   //* MQTT
   const channelId = useMqttStore(state => state.channelId);
-  const readApiKey = useMqttStore(state => state.readApiKey);
+  // const readApiKey = useMqttStore(state => state.readApiKey);
   const writeApiKey = useMqttStore(state => state.writeApiKey);
   const clientId = useMqttStore(state => state.clientId);
   const username = useMqttStore(state => state.username);
@@ -44,26 +44,32 @@ const Dashboard = () => {
   //Eje X
   const [series, setSeries] = useState<ApexAxisChartSeries | ApexNonAxisChartSeries | undefined>();
   // Get last weight from ThingSpeak
-  const last_weight_url = `https://api.thingspeak.com/channels/${channelId}/fields/1.json?api_key=${readApiKey}&results=1`;
+  // const last_weight_url = `https://api.thingspeak.com/channels/${channelId}/fields/1.json?api_key=${readApiKey}&results=1`;
+  const write_url = `https://api.thingspeak.com/update?api_key=${writeApiKey}&`
   const { categories, seriesData } = useMqttStore();
   const updateCategories = useMqttStore(state => state.updateCategories);
   const updateSeriesData = useMqttStore(state => state.updateSeriesData);
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(last_weight_url);
-      const jsonData = response.data;
-      const { feeds } = jsonData;
-      if (feeds && feeds.length > 0) {
-        // setLocalSeriesData((prevState) => [...prevState, Number(feeds[0].field1)]);
-        updateSeriesData(Number(feeds[0].field1));
-        const utcDate = new Date(feeds[0].created_at);
-        // setLocalCategories((prevState) => [...prevState, utcDate.toLocaleString()]);
-        updateCategories(utcDate.toLocaleTimeString());
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
+  // const clearCategories = useMqttStore(state => state.clearCategories);
+  // const clearSeriesData = useMqttStore(state => state.clearSeriesData);
+  // const maxWeight = useMqttStore(state => state.maxWeight);
+  // const updateMaxWeight = useMqttStore(state => state.updateMaxWeight);
+
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await axios.get(last_weight_url);
+  //     const jsonData = response.data;
+  //     const { feeds } = jsonData;
+  //     if (feeds && feeds.length > 0) {
+  //       // setLocalSeriesData((prevState) => [...prevState, Number(feeds[0].field1)]);
+  //       updateSeriesData(Number(feeds[0].field1));
+  //       const utcDate = new Date(feeds[0].created_at);
+  //       // setLocalCategories((prevState) => [...prevState, utcDate.toLocaleString()]);
+  //       updateCategories(utcDate.toLocaleTimeString());
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching data:', error);
+  //   }
+  // };
   useEffect(() => {
     setOptions({
       // colors : ['#5085de'],
@@ -200,7 +206,7 @@ const Dashboard = () => {
       clientPaho.onConnectionLost = onConnectionLost;
       clientPaho.onMessageArrived = onMessageArrived;
       clientPaho.connect(connectOptions);
-      fetchData();
+      // fetchData();
     }
   }, [keysSetted]);
   
@@ -232,36 +238,312 @@ const Dashboard = () => {
   }
 
   function onMessageArrived(message: any) {
+    toast.info('Nueva publicación, espera 15 seg.')
     console.log("onMessageArrived:"+message.payloadString);
     const payloadJson = JSON.parse(message.payloadString);
     const { field1, created_at } = payloadJson;
-    const utcDate = new Date(created_at);
-    console.log('Last write:', field1, 'kg', 'at:', utcDate.toLocaleString());
-    updateCategories(utcDate.toLocaleTimeString());
-    updateSeriesData(Number(field1));
+    
+    if(field1!==null) {
+      const utcDate = new Date(created_at);
+      console.log('Last write:', field1, 'kg', 'at:', utcDate.toLocaleString());
+      updateCategories(utcDate.toLocaleTimeString());
+      updateSeriesData(Number(field1));
+      // addMeasureToFirestore(Number(field1), utcDate);
+    }
   }
   //* End of MQTT
+
+  // const addMeasureToFirestore = async (newWeight: number, newDate: Date) => {
+  //   const meassuresRef = collection(db, "meassures");
+  //   console.log('new date 1:',newDate.toLocaleString())
+  //   console.log('new date 2:',newDate.toLocaleDateString())
+  //   await setDoc(doc(meassuresRef, user.email+newDate), {
+  //     weight: newWeight,
+  //     date: newDate.toLocaleDateString(),
+  //     time: newDate.toLocaleTimeString(),
+  //   });
+  // }
+
+  // const getDayMeassuresFromFirestore = async () => { 
+  //   console.log('Obteniendo horarios del día...')
+  //   const currentDate = new Date().toLocaleDateString();
+  //   console.log('Fecha actual:', currentDate);
+
+  //   // const q = query(collection(db, "meassures"), where("date", "==", "26/5/2024"));
+  //   const q = query(collection(db, "meassures"), where("date", "==", currentDate));
+  //   const querySnapshot = await getDocs(q);
+  //   querySnapshot.forEach((doc) => {
+  //     // doc.data() is never undefined for query doc snapshots
+  //     console.log(" Time ", doc.data().time);
+  //     updateSeriesData(doc.data().weight);
+  //     updateCategories(doc.data().time);
+  //   });
+  // }
+
+  // useEffect(() => {
+  //   getDayMeassuresFromFirestore();
+
+  //   return () => {
+  //     clearCategories();
+  //     clearSeriesData();
+  //   }
+  // },[]);
   
-  console.log(selectedTime)
-  console.log('Fecha y hora:', selectedTime?.$d)
-  console.log('Horario:', selectedTime?.$H, selectedTime?.$m)
+  const columns: any = [
+    {
+      name: 'Horario',
+      selector: (row: any) => row.horario
+    },
+    {
+      name: 'Eliminar',
+      cell: (row: any) => 
+        <button  onClick={()=>{ handleRemoveTime(row.horario) }} className="w-auto justify-center p-1.5 rounded-md flex items-center gap-2 hover:scale-95 transition-all text-gray-900 focus:outline-none bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9.75 14.25 12m0 0 2.25 2.25M14.25 12l2.25-2.25M14.25 12 12 14.25m-2.58 4.92-6.374-6.375a1.125 1.125 0 0 1 0-1.59L9.42 4.83c.21-.211.497-.33.795-.33H19.5a2.25 2.25 0 0 1 2.25 2.25v10.5a2.25 2.25 0 0 1-2.25 2.25h-9.284c-.298 0-.585-.119-.795-.33Z" />
+          </svg>
+        </button>,
+    },
+  ]
+
+  const data = [
+    {
+      horario: '09:00' 
+    },
+    {
+      horario: '12:30' 
+    },
+    {
+      horario: '16:00' 
+    },
+    {
+      horario: '20:00' 
+    },
+  ]
+
+  //  Internally, customStyles will deep merges your customStyles with the default styling.
+  const customStyles: TableStyles = {
+    rows: {
+      style: {
+        fontSize: '16px',
+      },
+    },
+    headCells: {
+      style: {
+        fontSize: '18px',
+        justifyContent: 'center',
+      },
+    },
+    cells: {
+      style: {
+        justifyContent: 'center',
+      },
+    },
+  };
+
+  // createTheme creates a new theme named solarized that overrides the build in dark theme
+  createTheme('solarized', {
+    text: {
+      primary: '#FFFFFF',
+      // secondary: '#2aa198',
+    },
+    background: {
+      default: '#0d2136',
+    },
+    context: {
+      // background: '#cb4b16',
+      text: '#FFFFFF',
+    },
+    divider: {
+      default: '#073642',
+    },
+  });
+
+  const [inputmaxWeight, setInputMaxWeight] = useState<number>(0);
+
+  const handleMaxWeight = () => {
+    console.log('Max weight:', inputmaxWeight);
+    Swal.fire({
+      title: `<h5 style='color:white'>¿Desea actualizar el peso máximo?</span></h5>`,
+      imageUrl: "/max-weight.png",
+      // imageWidth: 200,
+      // imageHeight: 200,
+      imageAlt: "Custom image",
+      showCancelButton: true,
+      background: "#0d2136",
+      confirmButtonColor: "#1a56db",
+      cancelButtonColor: "#374151",
+      confirmButtonText: "Actualizar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // console.log('MAX WEIGHT:', inputmaxWeight);
+        // updateMaxWeight(inputmaxWeight);
+        const promise = axios.get(write_url + 'field2=' + inputmaxWeight);
+        toast.promise(promise, {
+          loading: 'Actualizando...',
+          success: (res: any) => {
+            console.log(res.data)
+            if(res.data === 0) {
+              throw new Error("Demasiadas actualizaciones en poco tiempo. Espere un momento...");
+            }
+            return 'Peso máximo actualizado!';
+          },
+          error: (error: any) => {
+            console.log(error)
+            return error;
+          },
+        });
+
+      }
+    });
+  }
+
+  const handleAddTime = () => {
+    const newTime = selectedTime?.$H + ':' + selectedTime?.$m;
+    if(newTime === 'undefined:undefined') {
+      toast.error("Seleccione un horario válido");
+      return;
+    }
+    Swal.fire({
+      title: `<h5 style='color:white'>Se agregará el horario <span style='color:aquamarine'>${selectedTime?.$H}:${selectedTime?.$m}</span></h5>`,
+      imageUrl: "/new-time.png",
+      imageAlt: "Custom image",
+      showCancelButton: true,
+      background: "#0d2136",
+      confirmButtonColor: "#1a56db",
+      cancelButtonColor: "#374151",
+      confirmButtonText: "Agregar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        
+        const promise = axios.get(write_url + 'field5=' + selectedTime?.$H + ':' + selectedTime?.$m);
+        toast.promise(promise, {
+          loading: 'Agregando horario...',
+          success: (res: any) => {
+            console.log(res.data)
+            if(res.data === 0) {
+              throw new Error("Demasiadas actualizaciones en poco tiempo. Espere un momento...");
+            }
+            return 'Nuevo horario añadido!';
+          },
+          error: (error: any) => {
+            console.log(error)
+            return error;
+          },
+        });
+
+      }
+    });
+  }
+
+  const handleRemoveTime = (timeToRemove: string) => {
+    console.log('Horario a eliminar:', timeToRemove);
+    Swal.fire({
+      title: `<h5 style='color:white'>¿Desea eliminar el horario de las <span style='color:aquamarine'>${timeToRemove}</span>?</h5>`,
+      imageUrl: "/delete-time.png",
+      imageAlt: "Custom image",
+      showCancelButton: true,
+      background: "#0d2136",
+      confirmButtonColor: "#1a56db",
+      cancelButtonColor: "#374151",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        
+        const promise = axios.get(write_url + 'field6=' + timeToRemove);
+        toast.promise(promise, {
+          loading: 'Eliminando horario...',
+          success: (res: any) => {
+            console.log(res.data)
+            if(res.data === 0) {
+              throw new Error("Demasiadas actualizaciones en poco tiempo. Espere un momento...");
+            }
+            return 'Horario eliminado!';
+          },
+          error: (error: any) => {
+            console.log(error)
+            return error;
+          },
+        });
+
+      }
+    });
+  }
+  
+  const handleDispenseNow = () => {
+    
+    Swal.fire({
+      title: `<h5 style='color:white'>¿Está segur@ que desea dispensar ahora mismo?</h5>`,
+      imageUrl: "/dispense-now.png",
+      imageAlt: "Custom image",
+      showCancelButton: true,
+      background: "#0d2136",
+      confirmButtonColor: "#1a56db",
+      cancelButtonColor: "#374151",
+      confirmButtonText: "Dispensar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        
+        const promise = axios.get(write_url + 'field3=' + 1); //? 1 porque es un booleano
+        toast.promise(promise, {
+          loading: 'Cargando...',
+          success: (res: any) => {
+            console.log(res.data)
+            if(res.data === 0) {
+              throw new Error("Demasiadas actualizaciones en poco tiempo. Espere un momento...");
+            }
+            return 'Ha empezado ha dispensarse el alimento!';
+          },
+          error: (error: any) => {
+            console.log(error)
+            return error;
+          },
+        });
+
+      }
+    });
+  }
+
+  // console.log(selectedTime)
+  // console.log('Fecha y hora:', selectedTime?.$d)
+  // console.log(`Horario: ${selectedTime?.$H}:${selectedTime?.$m}`)
   
   return (
     // <div className="flex-col md:flex-row md:flex-wrap mt-4">
     <div className="mt-4">
       
-      
       {/* Imagenes */}
+      
       {/* <div className=" grid grid-cols-2 place-items-center">
         <img src="/dog-landing.png" className="h-40 w-50 sm:h-60 sm:w-70 sm:mt-9"/>
         <img src="/card-6.png" className="h-70 w-80 md:h-90 md:w-100"/>
       </div> */}
+
+      {/* Primera fila: Gráfico de peso */}
+      {/* <div className="ml-2 mr-1"> */}
+      {/* <p className="text-white">{inputmaxWeight}</p> */}
+      <div className=" my-4 px-4 mr-1">
+        
+        <div className="bg-[#0d2136] px-2">
+          {series && options && (
+            <ReactApexChart options={options} series={series} type="line" height={350} />
+          )}
+        </div>
+
+        {/* <div className="mt-4 flex justify-center items-center sm:mt-0"> */}
+          {/* <RadialGradientBar weightSeries={ seriesData.slice(-1)[0] || [] } /> */}
+        {/* </div> */}
+        
+      </div>
       
       {/* Segunda fila: Peso máximo y Horarios */}
       <div className="sm:flex items-center justify-center my-4 sm:space-x-10 space-y-4 sm:space-y-0">
 
         {/* Cantidad máxima de peso */}
-        <div className="bg-[#1f2937] px-4 pb-6 rounded-lg mx-4 sm:mx-0">
+        <div className="bg-[#0d2136] px-4 pb-6 rounded-lg mx-4 sm:mx-0">
           
           {/* Heading and Icon */}
           <div className="flex flex-row justify-center items-center p-4 text-white">
@@ -280,8 +562,9 @@ const Dashboard = () => {
               name="maxWeight"
               id="maxWeight"
               placeholder='xx'
+              onChange={(newValue: any) => setInputMaxWeight(newValue.target.value)}
             />          
-            <button onClick={()=>{alert('Boton editar peso máximo'); }} className="text-white w-auto justify-center py-3.5 px-3.5 bg-[#1a56db] hover:bg-[#1d4ed8] rounded-md flex items-center gap-2 hover:scale-95 transition-all">
+            <button onClick={()=>{ handleMaxWeight() }} className="text-white w-auto justify-center py-3.5 px-3.5 bg-[#1a56db] hover:bg-[#1d4ed8] rounded-md flex items-center gap-2 hover:scale-95 transition-all">
               {/* <span className="text-xl">Editar</span> */}
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
@@ -292,7 +575,7 @@ const Dashboard = () => {
         </div>
 
         {/* Horarios y Dispensar Ahora */}
-        <div className="bg-[#1f2937] px-4 pb-6 rounded-lg mx-4 sm:mx-0">
+        <div className="bg-[#0d2136] px-4 pb-6 rounded-lg mx-4 sm:mx-0">
           {/* Heading and Icon  */}
           <div className="flex flex-row justify-center items-center p-4 text-white">
             <h2 className="text-xl md:text-2xl font-semibold mr-2">Establecer horarios</h2>
@@ -327,50 +610,41 @@ const Dashboard = () => {
               /> */}
             </LocalizationProvider>
               
-            <button onClick={()=>{alert('Boton agregar horario'); }} className="text-white w-auto justify-center py-3.5 px-3.5 bg-[#1a56db] hover:bg-[#1d4ed8] rounded-md flex items-center gap-2 hover:scale-95 transition-all">
+            <button onClick={()=>{handleAddTime()}} className="text-white w-auto justify-center py-3.5 px-3.5 bg-[#1a56db] hover:bg-[#1d4ed8] rounded-md flex items-center gap-2 hover:scale-95 transition-all">
               {/* <span className="text-xl">Agregar</span> */}
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
               </svg>
             </button>
 
-            <button onClick={()=>{alert('Boton eliminar horario'); }} className="w-auto justify-center py-3.5 px-3.5 rounded-md flex items-center gap-2 hover:scale-95 transition-all text-gray-900 focus:outline-none bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-              {/* <span className="text-xl">Eliminar</span> */}
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9.75 14.25 12m0 0 2.25 2.25M14.25 12l2.25-2.25M14.25 12 12 14.25m-2.58 4.92-6.374-6.375a1.125 1.125 0 0 1 0-1.59L9.42 4.83c.21-.211.497-.33.795-.33H19.5a2.25 2.25 0 0 1 2.25 2.25v10.5a2.25 2.25 0 0 1-2.25 2.25h-9.284c-.298 0-.585-.119-.795-.33Z" />
-              </svg>
-            </button>
-
           </div>
 
-          <div className="py-3 flex items-center text-sm text-white before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6">
-            o
+          {/* Lista de horarios */}
+          <div className="bg-[#0d2136] rounded-lg mx-4 sm:mx-0">
+            <Datatable
+              // title="Horarios de alimentación"
+              columns={columns}
+              data={data}
+              // selectableRows={true}
+              // selectableRowsSingle={true}
+              onSelectedRowsChange={(data: any) => console.log(data)}
+              customStyles={customStyles}
+              theme="solarized"
+            />
           </div>
-
-          {/* Boton Dispensar Ahora */}
-          <div className="flex justify-center">
-            <button onClick={()=>{alert('Boton dispensar ahora'); }} className="text-white w-auto justify-center py-3.5 px-3.5 bg-[#1a56db] hover:bg-[#1d4ed8] rounded-md flex items-center gap-2 hover:scale-95 transition-all">
-              <span className="text-xl">Dispensar ahora</span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 3.75H6.912a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859M12 3v8.25m0 0-3-3m3 3 3-3" />
-              </svg>
-            </button>
-          </div>
-
+        
         </div>
 
-      </div>
-
-      {/* Primera fila: Gráfico de peso */}
-      {/* <h2 className="text-2xl font-bold text-center">Categories: |{categories}|</h2>
-      <h2 className="text-2xl font-bold text-center">Series data: |{seriesData}|</h2> */}
-      {/* <div className="ml-2 mr-1"> */}
-      <div className="my-4 px-4 mr-1">
-        <div className="bg-[#0d2136] px-2">
-          {series && options && (
-            <ReactApexChart options={options} series={series} type="line" height={350} />
-          )}
+        {/* Boton Dispensar Ahora */}
+        <div className="flex justify-center">
+          <button onClick={()=>{ handleDispenseNow() }} className="text-white w-auto justify-center py-3.5 px-3.5 bg-[#1a56db] hover:bg-[#1d4ed8] rounded-md flex items-center gap-2 hover:scale-95 transition-all">
+            <span className="text-xl">Dispensar ahora</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 3.75H6.912a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859M12 3v8.25m0 0-3-3m3 3 3-3" />
+            </svg>
+          </button>
         </div>
+
       </div>
 
     </div>

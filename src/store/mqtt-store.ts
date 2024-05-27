@@ -32,6 +32,11 @@ interface State {
   seriesData: number[],
   updateCategories: (newCategorie: string) => void
   updateSeriesData: (newData: number) => void
+  clearCategories: () => void
+  clearSeriesData: () => void
+  //Max weight
+  maxWeight: number
+  updateMaxWeight: (newMaxWeight: number) => void
 }
 
 export const useMqttStore = create<State>()(
@@ -91,6 +96,11 @@ export const useMqttStore = create<State>()(
         const { seriesData } = get()
         set({ seriesData: [...seriesData, newData] })
       },
+      clearCategories: () => set({ categories: [] }),
+      clearSeriesData: () => set({ seriesData: [] }),
+      //* <----------------  Max weight ---------------->
+      maxWeight: 0,
+      updateMaxWeight: (newMaxWeight: number) => set({ maxWeight: newMaxWeight }),
     }),
     
 )
