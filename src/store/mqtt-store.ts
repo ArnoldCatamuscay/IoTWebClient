@@ -99,7 +99,7 @@ export const useMqttStore = create<State>()(
       clearCategories: () => set({ categories: [] }),
       clearSeriesData: () => set({ seriesData: [] }),
       //* <----------------  Max weight ---------------->
-      maxWeight: 0,
+      maxWeight: 100,
       updateMaxWeight: (newMaxWeight: number) => set({ maxWeight: newMaxWeight }),
     }),
     

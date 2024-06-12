@@ -12,6 +12,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 import Datatable, { TableStyles, createTheme } from "react-data-table-component";
 import Swal from "sweetalert2";
+import RadialGradientBar from "../../components/RadialGradientBar";
 
 const Dashboard = () => {
   const [selectedTime, setSelectedTime] = useState<any>(null)
@@ -52,7 +53,7 @@ const Dashboard = () => {
   // const clearCategories = useMqttStore(state => state.clearCategories);
   // const clearSeriesData = useMqttStore(state => state.clearSeriesData);
   // const maxWeight = useMqttStore(state => state.maxWeight);
-  // const updateMaxWeight = useMqttStore(state => state.updateMaxWeight);
+  const updateMaxWeight = useMqttStore(state => state.updateMaxWeight);
 
   // const fetchData = async () => {
   //   try {
@@ -377,7 +378,7 @@ const Dashboard = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         // console.log('MAX WEIGHT:', inputmaxWeight);
-        // updateMaxWeight(inputmaxWeight);
+        
         const promise = axios.get(write_url + 'field2=' + inputmaxWeight);
         toast.promise(promise, {
           loading: 'Actualizando...',
@@ -386,6 +387,7 @@ const Dashboard = () => {
             if(res.data === 0) {
               throw new Error("Demasiadas actualizaciones en poco tiempo. Espere un momento...");
             }
+            updateMaxWeight(inputmaxWeight);
             return 'Peso máximo actualizado!';
           },
           error: (error: any) => {
@@ -525,17 +527,17 @@ const Dashboard = () => {
       {/* Primera fila: Gráfico de peso */}
       {/* <div className="ml-2 mr-1"> */}
       {/* <p className="text-white">{inputmaxWeight}</p> */}
-      <div className=" my-4 px-4 mr-1">
+      <div className="sm:flex my-4 px-4 mr-1">
         
-        <div className="bg-[#0d2136] px-2">
+        <div className="bg-[#0d2136] px-2 sm:w-full">
           {series && options && (
             <ReactApexChart options={options} series={series} type="line" height={350} />
           )}
         </div>
 
-        {/* <div className="mt-4 flex justify-center items-center sm:mt-0"> */}
-          {/* <RadialGradientBar weightSeries={ seriesData.slice(-1)[0] || [] } /> */}
-        {/* </div> */}
+        <div className="mt-4 flex justify-center items-center sm:mt-0">
+          <RadialGradientBar />
+        </div>
         
       </div>
       
