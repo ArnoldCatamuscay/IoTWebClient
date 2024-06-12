@@ -4,7 +4,7 @@ import { ConnectionOptions, SubscribeOptions } from "paho-mqtt";
 import ReactApexChart from "react-apexcharts";
 import axios from "axios";
 import { db } from "../../firebase/firebase-config";
-import { doc, getDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "../../context/authContext";
 import { toast } from "sonner";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -52,7 +52,7 @@ const Dashboard = () => {
   const updateSeriesData = useMqttStore(state => state.updateSeriesData);
   // const clearCategories = useMqttStore(state => state.clearCategories);
   // const clearSeriesData = useMqttStore(state => state.clearSeriesData);
-  // const maxWeight = useMqttStore(state => state.maxWeight);
+  const maxWeight = useMqttStore(state => state.maxWeight);
   const updateMaxWeight = useMqttStore(state => state.updateMaxWeight);
 
   // const fetchData = async () => {
@@ -188,22 +188,61 @@ const Dashboard = () => {
       console.log("Already set!");
     }
   }
+  
+  //* Obtenemos el peso máximo de Firestore para asignarlo al estado global
+  const getMaxWeight = async () => {
+    const docRef = doc(db, "maxWeights", user.email);
+    const docSnap = await getDoc(docRef);    
+    if (docSnap.exists()) { 
+      console.log("Document data:", docSnap.data());
+      updateMaxWeight(docSnap.data().maxWegiht);
+    } else if (!docSnap.exists()) {
+      console.log("No such document!");
+    }
+  }
+  
+  // const [schedules, setSchedules] = useState([]);
+  const [schedules, setSchedules] = useState<{ horario: string }[]>([]);
+  //* Obtenemos los horarios de Firestore para mostrarlos en la tabla
+  const getSchedules = async () => {
+    console.log('Obteniendo horarios...');
+    const docRef = doc(db, "schedules", user.email);
+    const docSnap = await getDoc(docRef);    
+    if (docSnap.exists()) { 
+      console.log("SCHEDULES FROM FIRESTORE:", docSnap.data().schedules);
+      const fetchedSchedules = docSnap.data().schedules;
+      // Transforma el array de strings en un array de objetos
+      const transformedSchedules = fetchedSchedules.map((schedule: any) => ({ horario: schedule }));
+      setSchedules(transformedSchedules);
+      // console.log('Schedules useState:', schedules);
+    } else if (!docSnap.exists()) {
+      // console.log("No such document!");
+      
+      const keysRef = collection(db, "schedules");
+      const userDoc = doc(keysRef, user.email);
+      await setDoc(userDoc, { schedules: [] });
+    }
+  }
 
   useEffect(() => {
     getKeys();
+    getMaxWeight();
+    getSchedules();
+    // console.log('schedules: ', schedules);
+    setInputMaxWeight(maxWeight);
   },[]);
 
   //* MQTT Connection
   useEffect(() => {
     
-    if (clientId !== null) {
-      console.log('URL: ', host, ':', port, path);
-      console.log('Client id property:', clientId);
-      console.log('Client id from Client Paho:', clientPaho.clientId);
-      console.log('Is connected?: ', clientPaho.isConnected());
-    }
+    // if (clientId !== null) {
+    //   console.log('URL: ', host, ':', port, path);
+    //   console.log('Client id property:', clientId);
+    //   console.log('Client id from Client Paho:', clientPaho.clientId);
+    //   console.log('Is connected?: ', clientPaho.isConnected());
+    // }
     if(channelId !== '' && username !== '' && password !== '' && clientPaho.clientId !== '' && clientPaho.isConnected() === false) {
-      console.log('ENTRO AL USE EFFECT DE MQTT CONECTAR')
+      // console.log('ENTRO AL USE EFFECT DE MQTT CONECTAR')
       clientPaho.onConnectionLost = onConnectionLost;
       clientPaho.onMessageArrived = onMessageArrived;
       clientPaho.connect(connectOptions);
@@ -306,20 +345,20 @@ const Dashboard = () => {
     },
   ]
 
-  const data = [
-    {
-      horario: '09:00' 
-    },
-    {
-      horario: '12:30' 
-    },
-    {
-      horario: '16:00' 
-    },
-    {
-      horario: '20:00' 
-    },
-  ]
+  // let schedules: any = [
+    // {
+    //   horario: '09:00' 
+    // },
+    // {
+    //   horario: '12:30' 
+    // },
+    // {
+    //   horario: '16:00' 
+    // },
+    // {
+    //   horario: '20:00' 
+    // },
+  // ]
 
   //  Internally, customStyles will deep merges your customStyles with the default styling.
   const customStyles: TableStyles = {
@@ -361,6 +400,25 @@ const Dashboard = () => {
 
   const [inputmaxWeight, setInputMaxWeight] = useState<number>(0);
 
+  const saveMaxWeightFB = async (newMaxWeight: number) => {
+    const keysRef = collection(db, "maxWeights");
+    const promise = setDoc(doc(keysRef, user.email), {
+      //REST
+      maxWegiht: newMaxWeight,
+    });
+
+    toast.promise(promise, {
+      loading: 'Guardando el peso máximo...',
+      success: (/*res: any*/) => {
+        return 'Peso máximo guardado correctamente!';
+      },
+      error: (error: any) => {
+        console.log(error)
+        return error;
+      },
+    });
+  }
+
   const handleMaxWeight = () => {
     console.log('Max weight:', inputmaxWeight);
     Swal.fire({
@@ -387,6 +445,7 @@ const Dashboard = () => {
             if(res.data === 0) {
               throw new Error("Demasiadas actualizaciones en poco tiempo. Espere un momento...");
             }
+            saveMaxWeightFB(inputmaxWeight);
             updateMaxWeight(inputmaxWeight);
             return 'Peso máximo actualizado!';
           },
@@ -399,6 +458,53 @@ const Dashboard = () => {
       }
     });
   }
+
+  // const [schedulesChange, setSchedulesChange] = useState<boolean>(false);
+
+  // useEffect(() => {
+  //   getSchedules();
+  //   // setSchedulesChange(!schedulesChange);
+  // }, [schedulesChange]);
+
+  const saveSchedulesFB = async (newSchedule: string) => {
+    try {
+        const keysRef = collection(db, "schedules");
+        const userDoc = doc(keysRef, user.email);
+        
+        // Obtener el documento del usuario (si existe)
+        const userDocSnapshot = await getDoc(userDoc);
+        
+        // Verificar si el usuario ya tiene una lista de horarios
+        if (userDocSnapshot.exists()) {
+            // Si existe, obtener los horarios actuales del usuario
+            const userData = userDocSnapshot.data();
+            const currentSchedules = userData.schedules || [];
+
+            // Agregar el nuevo horario a la lista existente
+            const updatedSchedules = [...currentSchedules, newSchedule];
+
+            // console.log("Horarios actuales del usuario:", updatedSchedules);
+            // const fetchedSchedules = updatedSchedules;
+            // Transforma el array de strings en un array de objetos
+            const transformedSchedules = updatedSchedules.map((schedule: any) => ({ horario: schedule }));
+            setSchedules(transformedSchedules);
+            // Actualizar la lista de horarios del usuario
+            await updateDoc(userDoc, {
+                schedules: updatedSchedules
+            });
+        } else {
+            // Si el usuario no tiene una lista de horarios, crear una nueva
+            await setDoc(userDoc, {
+                schedules: [newSchedule]
+            });
+        }
+        
+        // console.log("Horario guardado exitosamente en Firebase.");
+    } catch (error) {
+        console.error("Error al guardar el horario en Firebase:", error);
+    }
+}
+
 
   const handleAddTime = () => {
     const newTime = selectedTime?.$H + ':' + selectedTime?.$m;
@@ -418,7 +524,6 @@ const Dashboard = () => {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        
         const promise = axios.get(write_url + 'field5=' + selectedTime?.$H + ':' + selectedTime?.$m);
         toast.promise(promise, {
           loading: 'Agregando horario...',
@@ -427,6 +532,8 @@ const Dashboard = () => {
             if(res.data === 0) {
               throw new Error("Demasiadas actualizaciones en poco tiempo. Espere un momento...");
             }
+            saveSchedulesFB(newTime);
+            // getSchedules();
             return 'Nuevo horario añadido!';
           },
           error: (error: any) => {
@@ -436,6 +543,25 @@ const Dashboard = () => {
         });
 
       }
+    });
+  }
+
+  const deleteScheduleFB = async (scheduleToRemove: string) => {
+    const keysRef = collection(db, "schedules");
+    const userDoc = doc(keysRef, user.email);
+    const promise = updateDoc(userDoc, {
+      schedules: arrayRemove(scheduleToRemove)
+    });
+  
+    toast.promise(promise, {
+      loading: 'Eliminando horario...',
+      success: (/*res: any*/) => {
+        return 'Horario eliminado correctamente!';
+      },
+      error: (error: any) => {
+        console.log(error);
+        return 'Error al eliminar el horario: ' + error.message;
+      },
     });
   }
 
@@ -458,10 +584,12 @@ const Dashboard = () => {
         toast.promise(promise, {
           loading: 'Eliminando horario...',
           success: (res: any) => {
-            console.log(res.data)
+            // console.log(res.data)
             if(res.data === 0) {
               throw new Error("Demasiadas actualizaciones en poco tiempo. Espere un momento...");
             }
+            deleteScheduleFB(timeToRemove);
+            getSchedules();
             return 'Horario eliminado!';
           },
           error: (error: any) => {
@@ -563,7 +691,7 @@ const Dashboard = () => {
               className="w-1/4 p-3.5 bg-[#374151] border-2 border-[#969da9] rounded-md placeholder:font-light placeholder:text-[#969da9] text-white focus:outline-none focus:border-blue-500"
               name="maxWeight"
               id="maxWeight"
-              placeholder='xx'
+              placeholder={maxWeight.toString()}
               onChange={(newValue: any) => setInputMaxWeight(newValue.target.value)}
             />          
             <button onClick={()=>{ handleMaxWeight() }} className="text-white w-auto justify-center py-3.5 px-3.5 bg-[#1a56db] hover:bg-[#1d4ed8] rounded-md flex items-center gap-2 hover:scale-95 transition-all">
@@ -626,7 +754,7 @@ const Dashboard = () => {
             <Datatable
               // title="Horarios de alimentación"
               columns={columns}
-              data={data}
+              data={schedules}
               // selectableRows={true}
               // selectableRowsSingle={true}
               onSelectedRowsChange={(data: any) => console.log(data)}

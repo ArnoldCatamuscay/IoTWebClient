@@ -82,7 +82,8 @@ export const useMqttStore = create<State>()(
           password: '',
           clientPaho: new Paho.Client("mqtt3.thingspeak.com", 443, "/mqtt", ''),
           categories: [],
-          seriesData: []
+          seriesData: [],
+          maxWeight: 100,
         })
       },
       //* <----------------  Chart ---------------->
